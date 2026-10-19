@@ -9,7 +9,7 @@
         SCENE = "#1ab0ff", SCENE_MID = "#0b86e6", SCENE_DARK = "#032a66",
         NEON = "#d4ff2a", BUBBLEGUM = "#ff9ad5", BONE = "#f3e9c6", YELLOW = "#fff200", TAN = "#e8b25a", TAN_MID = "#c98a2e";
 
-  const FONTS = "https://fonts.googleapis.com/css2?family=Anton&family=Creepster&family=Metal+Mania&family=Nosifer&family=UnifrakturMaguntia&family=Press+Start+2P&family=Permanent+Marker&family=Bungee+Shade&display=swap";
+  const FONTS = "https://fonts.googleapis.com/css2?family=Anton&family=Bangers&family=Creepster&family=Metal+Mania&family=Nosifer&family=UnifrakturMaguntia&family=Press+Start+2P&family=Permanent+Marker&family=Bungee+Shade&display=swap";
 
   // ---------- helpers ----------
   function pixels(grid, x, y, size, colors) {
@@ -195,6 +195,53 @@
 
   // ---------- the designs ----------
   const DESIGNS = [
+    {
+      id: "rawr-monster",
+      name: "RAWR! Monster",
+      blurb: "a lime green fanged monster bursting out of white + pink paint splatter, yelling RAWR! w/ OMG + XD speech bubbles.",
+      inks: [LIME, PINK, WHITE, BLACK], tees: [BLACK, "#2b2b2b"],
+      art: () => {
+        const outline = (d, fill, w = 18) => `<path d="${d}" fill="${fill}" stroke="${BLACK}" stroke-width="${w}" stroke-linejoin="round"/>`;
+        const arm = (d) => `<path d="${d}" fill="none" stroke="${BLACK}" stroke-width="96" stroke-linecap="round"/><path d="${d}" fill="none" stroke="${LIME}" stroke-width="64" stroke-linecap="round"/>`;
+        const mouth = "M585,905 Q750,965 915,895 Q905,1125 750,1140 Q595,1125 585,905 Z";
+        let teeth = "";
+        for (let k = 0; k < 7; k++) {
+          const x = 620 + k * 44 + (k > 3 ? 4 : 0), y = 925 + Math.abs(k - 3) * -6, fang = k === 1 || k === 5;
+          teeth += `<path d="M${x - 20},${y - 8} L${x + 20},${y - 8} L${x},${y + (fang ? 80 : 36)} Z" fill="${WHITE}" stroke="${BLACK}" stroke-width="5"/>`;
+        }
+        const bubble = (cx, cy, rx, ry, tailX, tailY, fill, stroke, label, color, size) => `
+          <path d="M${cx - rx * 0.3},${cy + ry * 0.8} L${tailX},${tailY} L${cx + rx * 0.1},${cy + ry * 0.9} Z" fill="${fill}" stroke="${stroke}" stroke-width="12" stroke-linejoin="round"/>
+          <ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="${fill}" stroke="${stroke}" stroke-width="12"/>
+          <path d="M${cx - rx * 0.3},${cy + ry * 0.8} L${tailX},${tailY} L${cx + rx * 0.1},${cy + ry * 0.9}" fill="${fill}" stroke="none"/>
+          ${text(label, cx, cy + size * 0.36, "'Bangers'", size, color)}`;
+        return `
+        ${distressMask("worn-rawr", 43, 0.9)}
+        <g mask="url(#worn-rawr)">
+          ${splat(760, 960, 360, WHITE, 21)}${splat(1010, 740, 150, PINK, 22)}${splat(450, 1220, 110, PINK, 23)}${splat(1080, 1180, 70, LIME, 24)}
+          <g transform="rotate(-7 750 400)">
+            <text x="750" y="500" font-family="'Bangers'" font-size="330" text-anchor="middle" textLength="1080" lengthAdjust="spacingAndGlyphs" fill="${BLACK}" stroke="${BLACK}" stroke-width="40" stroke-linejoin="round">RAWR!</text>
+            <text x="750" y="500" font-family="'Bangers'" font-size="330" text-anchor="middle" textLength="1080" lengthAdjust="spacingAndGlyphs" fill="${LIME}" stroke="${WHITE}" stroke-width="8" paint-order="stroke">RAWR!</text>
+          </g>
+          ${arm("M540,980 Q440,960 380,860")}${arm("M960,960 Q1070,930 1120,820")}
+          <g fill="${WHITE}" stroke="${BLACK}" stroke-width="8"><path d="M360,830 l-10,-50 l30,40 Z M395,820 l10,-50 l10,52 Z"/><path d="M1105,790 l-10,-50 l30,42 Z M1140,800 l20,-46 l2,52 Z"/></g>
+          ${outline("M545,725 L455,520 L660,655 Z", LIME)}${outline("M955,725 L1045,520 L840,655 Z", LIME)}
+          <path d="M540,690 L490,575 L610,660 Z M960,690 L1010,575 L890,660 Z" fill="${PINK}"/>
+          ${outline("M520,760 C520,610 980,610 980,760 C1040,900 1020,1150 900,1220 C820,1262 680,1262 600,1220 C480,1150 460,900 520,760 Z", LIME)}
+          <path d="M610,1180 C700,1215 800,1215 890,1180" fill="none" stroke="#1f8f0a" stroke-width="10" stroke-linecap="round" opacity=".7"/>
+          <circle cx="640" cy="800" r="84" fill="${WHITE}" stroke="${BLACK}" stroke-width="14"/><circle cx="660" cy="812" r="36" fill="${BLACK}"/><circle cx="672" cy="798" r="11" fill="${WHITE}"/>
+          <circle cx="865" cy="805" r="58" fill="${WHITE}" stroke="${BLACK}" stroke-width="14"/><circle cx="850" cy="815" r="24" fill="${BLACK}"/>
+          <path d="M790,735 L935,760" stroke="${BLACK}" stroke-width="24" stroke-linecap="round"/>
+          <clipPath id="rawr-mouth"><path d="${mouth}"/></clipPath>
+          ${outline(mouth, BLACK, 14)}
+          <g clip-path="url(#rawr-mouth)"><ellipse cx="770" cy="1110" rx="110" ry="60" fill="${PINK}"/><path d="M770,1060 L770,1110" stroke="${BLACK}" stroke-width="6"/></g>
+          ${teeth}
+          ${bubble(1150, 1430, 170, 105, 1000, 1290, BLACK, PINK, "OMG", PINK, 120)}
+          ${bubble(330, 1460, 150, 100, 470, 1320, WHITE, BLACK, "XD", BLACK, 130)}
+          <path d="${starPath(240, 620, 40, 10)}" fill="${LIME}"/><path d="${starPath(1290, 600, 34, -12)}" fill="${PINK}"/><path d="${starPath(760, 1500, 30, 6)}" fill="${LIME}"/><path d="${starPath(1300, 1120, 26, 20)}" fill="${WHITE}"/>
+          ${pixels(SPARK, 200, 1050, 14, { X: LIME })}${pixels(SPARK, 1200, 230, 16, { X: PINK })}
+        </g>`;
+      },
+    },
     {
       id: "swag-scene",
       name: "#SWAG / SCENE",
