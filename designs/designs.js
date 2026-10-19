@@ -168,43 +168,73 @@
   // ---------- the designs ----------
   const DESIGNS = [
     {
-      id: "love-me-til-im-bones",
-      name: "Love Me Til I'm Bones",
-      blurb: "a worn ribcage w/ a leopard spine + a checkered heart splattered in pink, bats flying around. love me til i'm bones.",
-      inks: [BONE, PINK, BLACK], tees: [BLACK, "#1b2340"],
+      id: "drip-ribcage",
+      name: "Drippin' Ribcage",
+      blurb: "a huge ribcage that fills the whole front, dripping paint all the way down the spine, w/ a checkered heart splattered in pink.",
+      inks: [WHITE, "#8c8c8c", PINK, BLACK], tees: [BLACK],
       art: () => {
-        const outlineThenBone = (d, w) => `<path d="${d}" fill="none" stroke="${BLACK}" stroke-width="${w + 16}" stroke-linecap="round"/><path d="${d}" fill="none" stroke="${BONE}" stroke-width="${w}" stroke-linecap="round"/>`;
-        const wf = [0.62, 0.78, 0.9, 0.98, 1, 0.96, 0.86];
-        let ribs = "";
-        wf.forEach((f, i) => {
-          const y = 600 + i * 92, x = v => (750 + (v - 750) * f).toFixed(0);
-          const end = i > 4 ? `${x(1110)},${y + 200}` : `${x(1100)},${y + 210} C${x(1040)},${y + 250} ${x(960)},${y + 245} ${x(880)},${y + 215}`;
-          ribs += outlineThenBone(`M790,${y} C${x(1000)},${y - 70} ${x(1190)},${y + 20} ${x(1170)},${y + 120} C${x(1160)},${y + 160} ${x(1135)},${y + 190} ${end}`, 34 - i * 1.5);
+        const GREY = "#8c8c8c", rnd = seeded(31);
+        const bone = (d, w) => ({
+          shadow: `<path d="${d}" fill="none" stroke="${GREY}" stroke-width="${w + 4}" stroke-linecap="round" stroke-linejoin="round" transform="translate(14 16)"/>`,
+          main: `<path d="${d}" fill="none" stroke="${BLACK}" stroke-width="${w + 20}" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="${WHITE}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`,
         });
-        let spine = "";
-        for (let k = 0; k < 6; k++) spine += `<rect x="712" y="${1030 + k * 58}" width="76" height="46" rx="16" fill="url(#leo-bone)" stroke="${BLACK}" stroke-width="10"/>`;
-        const drips = [[860, 120], [905, 230], [950, 90], [990, 170]]
-          .map(([x, h]) => `<path d="M${x - 16},1010 L${x - 12},${1050 + h} A 12 12 0 0 0 ${x + 12},${1050 + h} L${x + 16},1010 Z" fill="${PINK}"/>`).join("");
+        // ribs (right side; mirrored for left)
+        const ribs = [], dripFrom = [];
+        for (let i = 0; i < 8; i++) {
+          const y = 300 + i * 118, f = [0.56, 0.75, 0.88, 0.96, 1, 0.99, 0.93, 0.82][i];
+          const X = v => +(750 + v * f).toFixed(0);
+          const p0 = [750 + 75, y + 10], p1 = [X(260), y - 55], p2 = [X(520), y - 10], p3 = [X(545), y + 115];
+          const d = i < 6
+            ? `M${p0} C${p1} ${p2} ${p3} C${X(560)},${y + 195} ${X(480)},${y + 245} ${X(370)},${y + 255}`
+            : `M${p0} C${p1} ${p2} ${p3} C${X(552)},${y + 180} ${X(520)},${y + 215} ${X(460)},${y + 228}`;
+          ribs.push(bone(d, 38 - i * 1.5));
+          [0.25, 0.45, 0.62, 0.8].forEach(t => dripFrom.push([...cubic(p0, p1, p2, p3, t), 38 - i * 1.5]));
+        }
+        const mirror = g => `<g transform="translate(1500 0) scale(-1 1)">${g}</g>`;
+        const ribShadows = ribs.map(r => r.shadow).join(""), ribMain = ribs.map(r => r.main).join("");
+        // collarbones
+        const clav = bone("M720,215 C620,180 480,230 330,190 C300,182 270,190 250,205", 42);
+        // sternum
+        const sternum = "M750,200 C820,200 840,250 815,300 L800,760 C796,830 770,870 750,900 C730,870 704,830 700,760 L685,300 C660,250 680,200 750,200 Z";
+        // spine
+        let spineSh = "", spine = "";
+        for (let k = 0; k < 13; k++) {
+          const y = 910 + k * 62, w = 120 + k * 3;
+          const v = `M${750 - w / 2},${y} h${w} a14,14 0 0 1 14,14 v22 a14,14 0 0 1 -14,14 h${-w} a14,14 0 0 1 -14,-14 v-22 a14,14 0 0 1 14,-14 Z
+            M${750 - w / 2 - 70},${y + 18} h${w + 140} a10,10 0 0 1 0,20 h${-(w + 140)} a10,10 0 0 1 0,-20 Z`;
+          spineSh += `<path d="${v}" fill="${GREY}" transform="translate(14 16)"/>`;
+          spine += `<path d="${v}" fill="${WHITE}" stroke="${BLACK}" stroke-width="6"/>`;
+        }
+        // drips: each one starts on a rib
+        let drips = "";
+        dripFrom.forEach(([x, y, w0], i) => {
+          if (rnd() < 0.35) return;
+          const len = 50 + rnd() * rnd() * 520, w = 9 + rnd() * 7, mx = rnd() < 0.5 ? x : 1500 - x, y0 = y + w0 * 0.3;
+          drips += `<path d="M${(mx - w / 2).toFixed(0)},${(y0 - 10).toFixed(0)} L${(mx - w / 2.6).toFixed(0)},${(y0 + len).toFixed(0)} A${(w / 2.6).toFixed(1)} ${(w / 2.6).toFixed(1)} 0 0 0 ${(mx + w / 2.6).toFixed(0)},${(y0 + len).toFixed(0)} L${(mx + w / 2).toFixed(0)},${(y0 - 10).toFixed(0)} Z" fill="${WHITE}"/><circle cx="${mx.toFixed(0)}" cy="${(y0 + len + 2).toFixed(0)}" r="${(w * 0.62).toFixed(1)}" fill="${WHITE}"/>`;
+        });
+        [[560, 210, 300], [940, 220, 420], [420, 205, 160], [1100, 205, 200]].forEach(([x, y, len]) => {
+          drips += `<path d="M${x - 7},${y} L${x - 5},${y + len} A5 5 0 0 0 ${x + 5},${y + len} L${x + 7},${y} Z" fill="${WHITE}"/><circle cx="${x}" cy="${y + len + 2}" r="8" fill="${WHITE}"/>`;
+        });
+        drips += `<path d="M744,1700 L746,1770 A6 6 0 0 0 758,1770 L760,1700 Z" fill="${WHITE}"/><circle cx="752" cy="1772" r="9" fill="${WHITE}"/>`;
+        const heartD = heartPath(960, 420, 300);
+        const pinkDrips = [[905, 260], [950, 140], [1000, 330], [1040, 180]]
+          .map(([x, h]) => `<path d="M${x - 14},640 L${x - 10},${680 + h} A10 10 0 0 0 ${x + 10},${680 + h} L${x + 14},640 Z" fill="${PINK}"/><circle cx="${x}" cy="${684 + h}" r="14" fill="${PINK}"/>`).join("");
         return `
-        ${leopardPattern("leo-bone", BONE, BONE, BLACK, 0.45, 0.45)}
-        <pattern id="rib-checks" width="64" height="64" patternUnits="userSpaceOnUse"><rect width="64" height="64" fill="${WHITE}"/><rect width="32" height="32" fill="${BLACK}"/><rect x="32" y="32" width="32" height="32" fill="${BLACK}"/></pattern>
-        <clipPath id="rib-heart"><path d="${heartPath(935, 760, 330)}"/></clipPath>
-        ${distressMask("worn-bones", 17, 1)}
-        <g mask="url(#worn-bones)">
-          ${text("LOVE ME", 750, 420, "'Creepster'", 250, PINK, 1000)}
+        <pattern id="drip-checks" width="60" height="60" patternUnits="userSpaceOnUse"><rect width="60" height="60" fill="${WHITE}"/><rect width="30" height="30" fill="${BLACK}"/><rect x="30" y="30" width="30" height="30" fill="${BLACK}"/></pattern>
+        <clipPath id="drip-heart"><path d="${heartD}"/></clipPath>
+        ${distressMask("worn-drip", 23, 1.1)}
+        <g mask="url(#worn-drip)">
+          ${ribShadows}${mirror(ribShadows)}${clav.shadow}${mirror(clav.shadow)}
+          <path d="${sternum}" fill="${GREY}" transform="translate(14 16)"/>${spineSh}
+          ${ribMain}${mirror(ribMain)}${clav.main}${mirror(clav.main)}
+          <path d="${sternum}" fill="${WHITE}"/>
+          <path d="M700,330 L800,330 M703,470 L797,470 M706,610 L794,610" stroke="${GREY}" stroke-width="8"/>
           ${spine}
-          <g>${ribs}</g><g transform="translate(1500 0) scale(-1 1)">${ribs}</g>
-          ${outlineThenBone("M735,560 C650,515 500,560 400,515", 30)}${outlineThenBone("M765,560 C850,515 1000,560 1100,515", 30)}
-          <path d="M750,535 C795,535 805,580 795,620 L783,905 C780,960 762,995 750,1015 C738,995 720,960 717,905 L705,620 C695,580 705,535 750,535 Z" fill="${BONE}" stroke="${BLACK}" stroke-width="12"/>
-          <path d="M712,700 L788,700 M716,800 L784,800 M720,900 L780,900" stroke="${BLACK}" stroke-width="7"/>
-          ${splat(940, 880, 120, PINK, 4)}${splat(470, 760, 45, PINK, 12)}
           ${drips}
-          <rect x="740" y="700" width="400" height="400" fill="url(#rib-checks)" clip-path="url(#rib-heart)"/>
-          <path d="${heartPath(935, 760, 330)}" fill="none" stroke="${BLACK}" stroke-width="22"/>
-          <path d="${heartPath(935, 760, 330)}" fill="none" stroke="${WHITE}" stroke-width="8"/>
-          ${bat(330, 480, 0.75, BONE)}${bat(1200, 1300, 0.6, BONE)}${bat(1230, 620, 0.45, BONE)}${bat(270, 1250, 0.5, BONE)}
-          ${pixels(SPARK, 1240, 900, 16, { X: PINK })}${pixels(SPARK, 220, 960, 14, { X: PINK })}${pixels(SPARK, 1100, 1450, 12, { X: BONE })}
-          ${text("TIL I'M BONES", 750, 1630, "'Creepster'", 210, PINK, 1300)}
+          ${splat(965, 520, 110, PINK, 6)}${splat(560, 600, 40, PINK, 14)}
+          ${pinkDrips}
+          <rect x="780" y="380" width="380" height="320" fill="url(#drip-checks)" clip-path="url(#drip-heart)"/>
+          <path d="${heartD}" fill="none" stroke="${BLACK}" stroke-width="20"/><path d="${heartD}" fill="none" stroke="${WHITE}" stroke-width="8"/>
         </g>`;
       },
     },
