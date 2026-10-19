@@ -7,7 +7,7 @@
   const PINK = "#ff2fa0", LIME = "#39ff14", CYAN = "#00e5ff", WHITE = "#ffffff",
         BLACK = "#0a0a0a", LAV = "#b388ff",
         SCENE = "#1ab0ff", SCENE_MID = "#0b86e6", SCENE_DARK = "#032a66",
-        NEON = "#d4ff2a", BUBBLEGUM = "#ff9ad5", BONE = "#f3e9c6";
+        NEON = "#d4ff2a", BUBBLEGUM = "#ff9ad5", BONE = "#f3e9c6", YELLOW = "#fff200", TAN = "#e8b25a", TAN_MID = "#c98a2e";
 
   const FONTS = "https://fonts.googleapis.com/css2?family=Anton&family=Creepster&family=Metal+Mania&family=Nosifer&family=UnifrakturMaguntia&family=Press+Start+2P&family=Permanent+Marker&family=Bungee+Shade&display=swap";
 
@@ -151,12 +151,15 @@
   // splatter: a blob w/ a few flicks + loose drops
   function splat(cx, cy, r, color, seed) {
     const rnd = seeded(seed);
-    let d = "";
-    const n = 14;
-    for (let i = 0; i <= n; i++) {
+    const n = 14, pts = [];
+    for (let i = 0; i < n; i++) {
       const a = i / n * Math.PI * 2, rr = r * (0.6 + rnd() * 0.5) * (i % 3 === 0 ? 1.5 : 1);
-      d += `${i ? "L" : "M"}${(cx + Math.cos(a) * rr).toFixed(1)},${(cy + Math.sin(a) * rr).toFixed(1)} `;
+      pts.push([cx + Math.cos(a) * rr, cy + Math.sin(a) * rr]);
     }
+    // smooth blob: curve through the midpoints, using each point as the control
+    const mid = (p, q) => [((p[0] + q[0]) / 2).toFixed(1), ((p[1] + q[1]) / 2).toFixed(1)];
+    let d = `M${mid(pts[n - 1], pts[0])}`;
+    pts.forEach((p, i) => { d += ` Q${p[0].toFixed(1)},${p[1].toFixed(1)} ${mid(p, pts[(i + 1) % n])}`; });
     let drops = "";
     for (let i = 0; i < 9; i++) {
       const a = rnd() * 6.28, dist = r * (1.4 + rnd() * 1.4);
@@ -165,8 +168,80 @@
     return `<path d="${d}Z" fill="${color}" stroke="${color}" stroke-width="${r * 0.25}" stroke-linejoin="round"/>${drops}`;
   }
 
+  const starPath = (cx, cy, R, rot = 0) => {
+    let d = "";
+    for (let i = 0; i < 10; i++) {
+      const a = -Math.PI / 2 + rot * Math.PI / 180 + i * Math.PI / 5, r = i % 2 ? R * 0.45 : R;
+      d += `${i ? "L" : "M"}${(cx + Math.cos(a) * r).toFixed(1)},${(cy + Math.sin(a) * r).toFixed(1)} `;
+    }
+    return d + "Z";
+  };
+  const miniSkull = (cx, cy, s, color) => `<g fill="${color}"><circle cx="${cx}" cy="${cy}" r="${s}"/><rect x="${cx - s * 0.55}" y="${cy + s * 0.5}" width="${s * 1.1}" height="${s * 0.75}" rx="${s * 0.2}"/></g>
+    <g fill="${BLACK}"><circle cx="${cx - s * 0.38}" cy="${cy + s * 0.05}" r="${s * 0.28}"/><circle cx="${cx + s * 0.38}" cy="${cy + s * 0.05}" r="${s * 0.28}"/>
+    <rect x="${cx - s * 0.05}" y="${cy + s * 0.85}" width="${s * 0.1}" height="${s * 0.4}"/><rect x="${cx - s * 0.32}" y="${cy + s * 0.85}" width="${s * 0.08}" height="${s * 0.4}"/><rect x="${cx + s * 0.24}" y="${cy + s * 0.85}" width="${s * 0.08}" height="${s * 0.4}"/></g>`;
+
   // ---------- the designs ----------
   const DESIGNS = [
+    {
+      id: "shutter-shades",
+      name: "Shutter Shades",
+      blurb: "giant neon shutter shades dripping over a hot pink vampire grin w/ a leopard tongue, surrounded by neon stars + lil skulls.",
+      inks: [PINK, LIME, CYAN, YELLOW, WHITE, TAN, BLACK], tees: [BLACK, "#1b2340"],
+      art: () => {
+        const rnd = seeded(41);
+        const lens = "M200,480 L720,480 Q742,480 736,522 L702,758 Q692,800 640,800 L330,800 Q232,800 210,722 L186,540 Q180,480 200,480 Z";
+        const slatColors = [PINK, LIME, CYAN, YELLOW];
+        let slats = "";
+        for (let k = 0; k < 7; k++) {
+          const y = 505 + k * 42;
+          slats += `<rect x="150" y="${y}" width="1200" height="24" fill="${slatColors[k % 4]}"/><rect x="150" y="${y}" width="1200" height="5" fill="${WHITE}" opacity=".85"/>`;
+        }
+        const drips = [[300, 160], [420, 90], [560, 240], [650, 120], [880, 200], [980, 110], [1120, 260], [1230, 140]]
+          .map(([x, h], i) => { const c = slatColors[i % 4]; return `<path d="M${x - 15},790 L${x - 11},${820 + h} A11 11 0 0 0 ${x + 11},${820 + h} L${x + 15},790 Z" fill="${c}"/><circle cx="${x}" cy="${823 + h}" r="15" fill="${c}"/>`; }).join("");
+        const lips = "M360,1080 C520,990 650,1045 750,1035 C850,1045 980,990 1140,1080 C1120,1360 910,1540 750,1540 C590,1540 380,1360 360,1080 Z";
+        const inner = "M440,1112 C560,1082 660,1112 750,1102 C840,1112 940,1082 1060,1112 C1030,1330 885,1455 750,1455 C615,1455 470,1330 440,1112 Z";
+        let teeth = "";
+        for (let k = 0; k < 8; k++) {
+          const x = 500 + k * 64, fang = k === 1 || k === 6;
+          teeth += fang ? `<path d="M${x - 30},1105 L${x + 30},1105 L${x + 4},${1235} Q${x},1245 ${x - 4},1235 Z" fill="${WHITE}" stroke="${BLACK}" stroke-width="6"/>`
+            : `<path d="M${x - 30},1105 L${x + 30},1105 L${x + 26},1160 Q${x},1175 ${x - 26},1160 Z" fill="${WHITE}" stroke="${BLACK}" stroke-width="6"/>`;
+        }
+        for (let k = 0; k < 6; k++) { const x = 590 + k * 64; teeth += `<path d="M${x - 28},1440 L${x + 28},1440 L${x + 24},1400 Q${x},1388 ${x - 24},1400 Z" fill="${WHITE}" stroke="${BLACK}" stroke-width="6"/>`; }
+        let confetti = "";
+        const spots = [[160, 300], [330, 260], [520, 340], [980, 330], [1180, 260], [1360, 330], [120, 900], [1390, 920], [180, 1250], [1330, 1230], [260, 1560], [1250, 1580], [700, 300], [130, 640], [1380, 640], [420, 1700], [1080, 1700]];
+        spots.forEach(([x, y], i) => {
+          const c = [PINK, LIME, CYAN, YELLOW][i % 4];
+          confetti += i % 3 === 0 ? miniSkull(x, y, 26, i % 2 ? CYAN : PINK) : `<path d="${starPath(x, y, 22 + rnd() * 22, rnd() * 40)}" fill="${c}"/>`;
+        });
+        return `
+        ${leopardPattern("leo-tongue", TAN, TAN_MID, BLACK, 0.5, 0.5)}
+        <clipPath id="lens-l"><path d="${lens}"/></clipPath>
+        <clipPath id="lens-r"><path d="${lens}" transform="translate(1500 0) scale(-1 1)"/></clipPath>
+        <clipPath id="mouth-in"><path d="${inner}"/></clipPath>
+        ${distressMask("worn-shades", 29, 0.8)}
+        <g mask="url(#worn-shades)">
+          ${splat(330, 1180, 90, LIME, 5)}${splat(1180, 1020, 70, PINK, 9)}${splat(1080, 460, 50, CYAN, 15)}
+          ${confetti}
+          ${drips}
+          <g clip-path="url(#lens-l)">${slats}</g><g clip-path="url(#lens-r)">${slats}</g>
+          <g fill="none" stroke-linejoin="round">
+            <path d="${lens}" stroke="${BLACK}" stroke-width="44"/><path d="${lens}" transform="translate(1500 0) scale(-1 1)" stroke="${BLACK}" stroke-width="44"/>
+            <path d="${lens}" stroke="${PINK}" stroke-width="26"/><path d="${lens}" transform="translate(1500 0) scale(-1 1)" stroke="${PINK}" stroke-width="26"/>
+            <path d="M736,500 Q750,470 764,500" stroke="${PINK}" stroke-width="26"/>
+            <path d="${lens}" stroke="${WHITE}" stroke-width="5" transform="translate(0 -8)"/>
+            <path d="${lens}" stroke="${WHITE}" stroke-width="5" transform="translate(1500 -8) scale(-1 1)"/>
+          </g>
+          <path d="${lips}" fill="${PINK}" stroke="${BLACK}" stroke-width="16"/>
+          <path d="M470,1060 C560,1030 640,1060 700,1055" fill="none" stroke="${WHITE}" stroke-width="14" stroke-linecap="round"/>
+          <path d="M600,1505 C680,1525 760,1525 860,1500" fill="none" stroke="${WHITE}" stroke-width="12" stroke-linecap="round" opacity=".9"/>
+          <path d="${inner}" fill="${BLACK}"/>
+          <g clip-path="url(#mouth-in)"><ellipse cx="750" cy="1430" rx="250" ry="120" fill="url(#leo-tongue)" stroke="${BLACK}" stroke-width="10"/></g>
+          ${teeth}
+          <path d="M564,1240 C556,1270 556,1290 564,1296 C572,1290 572,1270 564,1240 Z" fill="${PINK}"/>
+          <path d="M880,1480 L884,1640 A10 10 0 0 0 904,1640 L908,1475 Z" fill="${PINK}"/><circle cx="894" cy="1643" r="14" fill="${PINK}"/>
+        </g>`;
+      },
+    },
     {
       id: "drip-ribcage",
       name: "Drippin' Ribcage",
