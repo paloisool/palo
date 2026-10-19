@@ -295,7 +295,7 @@ a:hover { color: var(--lime); text-decoration: underline wavy; }
 .top8-count { margin: 0 0 8px; font-size: 12px; }
 .hot { color: #ff3333; }
 
-.top8 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.top8 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
 .friend {
   text-align: center;
   font-size: 11px;
@@ -535,7 +535,7 @@ a:hover { color: var(--lime); text-decoration: underline wavy; }
   .modal-body { grid-template-columns: 1fr; }
 }
 @media (max-width: 420px) {
-  .top8 { grid-template-columns: repeat(2, 1fr); }
+  .top8 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .shop-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
   .card .price { font-size: 10px; }
   .pfp { flex-basis: 110px; height: 110px; }
@@ -558,12 +558,6 @@ a:hover { color: var(--lime); text-decoration: underline wavy; }
 .checkout-actions .btn-glitter { width: auto; margin: 0; text-decoration: none; display: inline-block; }
 .checkout-actions a.btn-glitter:hover { color: #fff; text-decoration: none; }
 
-/* custom orders */
-.custom-intro { margin: 0 0 4px; }
-.price-inline { color: var(--lime); }
-.custom-form { margin-top: 4px; }
-.form-row { display: flex; flex-wrap: wrap; gap: 8px; }
-.form-row label { flex: 1 1 140px; min-width: 0; }
 .comment-form select {
   font-family: inherit; font-size: 13px;
   background: #000; color: var(--lime); border: 1px solid var(--pink); padding: 6px;
@@ -582,3 +576,5 @@ a:hover { color: var(--lime); text-decoration: underline wavy; }
   width: 22px; height: 22px; padding: 0; font-family: inherit;
 }
 .ci-qty .ci-remove { width: auto; height: auto; border: none; background: none; color: #ff5a5a; margin: 0 0 0 8px; }
+.friend { min-width: 0; }
+.toast:not(.show) { visibility: hidden; }

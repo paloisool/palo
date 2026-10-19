@@ -2,7 +2,7 @@
  * EDIT THE STUFF IN THIS FIRST SECTION to make the shop yours.
  */
 
-// where orders + custom requests get sent
+// where orders get sent
 const SHOP_EMAIL = "your-email@example.com"; // <-- CHANGE THIS
 // optional: your paypal.me / venmo / cashapp link (leave "" to hide)
 const PAY_LINK = "";
@@ -12,57 +12,58 @@ const FREE_SHIPPING_OVER = 75;   // $ subtotal for free shipping
 const BUNDLE_MIN = 2;            // items needed for bundle discount
 const BUNDLE_DISCOUNT = 0.10;    // 10% off
 const BIG_SIZE_EXTRA = 4;        // $ added for 2XL + 3XL
-const MADE_IN = "5-10 biz days"; // how long u take to make an order
+const SHIPS_IN = "3-5 biz days"; // how long shipping takes
 
 const SIZES = ["XS", "S", "M", "L", "XL", "2XL", "3XL"];
 
-/* YOUR DESIGNS ~ everything is made to order in any size.
- *  type:   "tee" | "hoodie" | "sweater"
- *  print:  the words printed on the placeholder drawing
- *  small:  tiny text under the graphic (lyric, year, whatever)
- *  img:    path to a real photo/mockup (e.g. "images/cry-til-dawn.jpg"). leave out to use the drawn placeholder.
+/* YOUR SHIRTS ~ buyers pick a size, then add to cart.
+ *  type:   "tee" | "sweater"
+ *  print:  the words on the placeholder drawing
+ *  small:  tiny text under the mustache
+ *  img:    path to a real photo (e.g. "images/stache-til-dawn.jpg"). leave out to use the drawn placeholder.
  *  color / ink: placeholder shirt color + print color
- *  motif:  placeholder graphic: skull | heart | broken | star | bat | dino | bolt | crown
+ *  stache: placeholder mustache: handlebar | chevron | curly | pencil
+ *  motif:  little extra above the mustache: tear | skull | heart | broken | star | bat | crown | bolt
  *  soldOut: true to stop taking orders for it
  *  top8:   true to put it in the Top 8
  */
 const PRODUCTS = [
-  { id: "cry-til-dawn", name: "'Cry Til Dawn' Tee", print: "Cry Til Dawn", small: "est. 2005", type: "tee",
-    price: 30, was: 35, color: "#0d0d0d", ink: "#ff2fa0", motif: "broken", tag: "NEW", top8: true,
-    desc: "my fave design ever. hot pink broken heart on a soft black tee. made for crying in the car w/ the windows down." },
-  { id: "velvet-coffin", name: "'Velvet Coffin' Bat Zip Hoodie", print: "Velvet Coffin", small: "night owls only", type: "hoodie",
-    price: 58, color: "#1a1a1a", ink: "#9d00ff", motif: "bat", tag: "HOT", top8: true,
-    desc: "full zip w/ thumb holes + a purple puff-print bat. the coziest way 2 be dramatic." },
-  { id: "sk8r-hearts", name: "'Sk8r Hearts' Checkered Heart Tee", print: "Sk8r Hearts", small: "kickflip ur heart", type: "tee",
-    price: 28, color: "#ff69b4", ink: "#0d0d0d", motif: "heart", top8: true,
-    desc: "hot pink tee w/ a black checkered heart. comes in a fitted baby-tee cut on request (just say so at checkout)." },
-  { id: "wristband-theory", name: "'Wristband Theory' Skull Sweater", print: "The Wristband Theory", small: "tour 4 ever", type: "sweater",
-    price: 50, color: "#2b0d1f", ink: "#39ff14", motif: "skull", top8: true,
-    desc: "maroon crewneck w/ a lime skull. oversized fit, sleeves long enough 2 hide ur hands in." },
-  { id: "rawr-forever", name: "'Rawr Means Forever' Dino Tee", print: "Rawr Means Forever", small: "i luv u (in dinosaur)", type: "tee",
-    price: 30, color: "#39ff14", ink: "#0d0d0d", motif: "dino", tag: "NEW", top8: true,
-    desc: "neon green tee w/ a lil dino saying rawr. which means i love u. obviously." },
-  { id: "black-lace", name: "'Black Lace Ballroom' Crown Pullover", print: "Black Lace Ballroom", small: "royalty of sadness", type: "hoodie",
-    price: 55, color: "#0d0d0d", ink: "#ffd700", motif: "crown", top8: true,
-    desc: "black pullover w/ a gold crown across the chest. kangaroo pocket 4 ur ipod nano." },
-  { id: "static-valentine", name: "'Static Valentine' Lightning Tee", print: "Static Valentine", small: "zap ur heart", type: "tee",
-    price: 28, color: "#00b7d9", ink: "#ffffff", motif: "bolt", top8: true,
-    desc: "cyan tee w/ a white lightning bolt. gives warped tour parking lot energy." },
-  { id: "neon-mascara", name: "'Neon Mascara' Star Sweater", print: "Neon Mascara", small: "glow in the dark (not really)", type: "sweater",
-    price: 48, color: "#111111", ink: "#ff2fa0", motif: "star", top8: true,
-    desc: "black crewneck w/ a pink star. soft inside, scene on the outside." },
-  { id: "glitter-gloom", name: "'Glitter & Gloom' Broken Heart Tee", print: "Glitter & Gloom", small: "sparkle sadly", type: "tee",
-    price: 28, color: "#ffffff", ink: "#ff0080", motif: "broken",
-    desc: "white tee, hot pink broken heart. for the sad but make it sparkly ppl." },
-  { id: "panic-mall", name: "'Panic at the Mall' Skull Zip Hoodie", print: "Panic at the Mall", small: "food court forever", type: "hoodie",
-    price: 58, color: "#ff2fa0", ink: "#0d0d0d", motif: "skull", tag: "HOT",
-    desc: "pink zip hoodie w/ a black skull. the most scene thing i've ever made." },
-  { id: "fire-escape", name: "'Hearts on Fire Escape' Bat Tee", print: "Hearts on Fire Escape", small: "climb out ur window", type: "tee",
-    price: 30, color: "#3d0066", ink: "#00e5ff", motif: "bat",
-    desc: "purple tee w/ a cyan bat. extra big back print too." },
-  { id: "paramour-kids", name: "'Paramour Kids' Star Sweater", print: "Paramour Kids", small: "misery loves company", type: "sweater",
-    price: 46, color: "#0d0d0d", ink: "#ffffff", motif: "star", soldOut: true,
-    desc: "black + white star crewneck. taking a break from this one, back soon!!" },
+  { id: "stache-til-dawn", name: "'Stache Til Dawn' Tee", print: "Stache Til Dawn", small: "cry. groom. repeat.", type: "tee",
+    price: 28, was: 32, color: "#0d0d0d", ink: "#ff2fa0", stache: "handlebar", motif: "tear", tag: "NEW", top8: true,
+    desc: "a hot pink handlebar stache shedding one single tear. on a soft black tee. my best seller 4 a reason." },
+  { id: "mustache-alone", name: "'I Mustache U 2 Leave Me Alone' Sweater", print: "I Mustache U 2 Leave Me Alone", small: "pls knock first", type: "sweater",
+    price: 48, color: "#1a1a1a", ink: "#9d00ff", stache: "curly", motif: "bat", tag: "HOT", top8: true,
+    desc: "black crewneck w/ a purple curly stache + a lil bat. for when ur door is closed and ur music is LOUD." },
+  { id: "rawr-mustache", name: "'Rawr Means I Mustache U' Tee", print: "Rawr Means I Mustache U", small: "(in dinosaur)", type: "tee",
+    price: 28, color: "#39ff14", ink: "#0d0d0d", stache: "chevron", motif: "heart", tag: "NEW", top8: true,
+    desc: "neon green tee, big black chevron stache, tiny heart. a love letter u can wear." },
+  { id: "sad-stache-club", name: "'Sad Stache Club' Sweater", print: "Sad Stache Club", small: "members only", type: "sweater",
+    price: 46, color: "#2b0d1f", ink: "#39ff14", stache: "handlebar", motif: "skull", top8: true,
+    desc: "maroon crewneck w/ a lime skull + handlebar stache. oversized, sleeves long enough 2 hide ur hands in." },
+  { id: "broken-stache", name: "'Broken Heart, Perfect Stache' Tee", print: "Broken Heart Perfect Stache", small: "at least i look good", type: "tee",
+    price: 28, color: "#ff69b4", ink: "#0d0d0d", stache: "pencil", motif: "broken", top8: true,
+    desc: "hot pink tee w/ a broken heart over a skinny lil pencil stache. sad but well groomed." },
+  { id: "handlebar-sadness", name: "'Handlebar of Sadness' Tee", print: "Handlebar of Sadness", small: "est. 2006", type: "tee",
+    price: 30, color: "#0d0d0d", ink: "#ffd700", stache: "handlebar", motif: "crown", top8: true,
+    desc: "black tee, gold handlebar w/ a crown on top. king of feeling things." },
+  { id: "mascara-mustaches", name: "'Mascara & Mustaches' Sweater", print: "Mascara & Mustaches", small: "smudged on purpose", type: "sweater",
+    price: 48, color: "#111111", ink: "#ff2fa0", stache: "curly", motif: "star", top8: true,
+    desc: "black crewneck w/ a pink curly stache + star. soft inside, scene on the outside." },
+  { id: "stache-in-rain", name: "'Mustache in the Rain' Tee", print: "Mustache in the Rain", small: "no umbrella. no regrets.", type: "tee",
+    price: 28, color: "#00b7d9", ink: "#ffffff", stache: "chevron", motif: "tear", top8: true,
+    desc: "cyan tee, white chevron stache w/ a raindrop (or a tear?? u decide)." },
+  { id: "emo-stache", name: "'Emo-Stache' Tee", print: "Emo Stache", small: "side bangs + side burns", type: "tee",
+    price: 26, color: "#ffffff", ink: "#ff0080", stache: "handlebar", motif: "broken",
+    desc: "white tee w/ a hot pink handlebar + broken heart. the og design that started it all." },
+  { id: "sk8r-stache", name: "'Sk8r Stache' Sweater", print: "Sk8r Stache", small: "kickflip ur feelings", type: "sweater",
+    price: 46, color: "#ff2fa0", ink: "#0d0d0d", stache: "chevron", motif: "bolt", tag: "HOT",
+    desc: "pink crewneck w/ a black chevron stache + lightning bolt. the most scene thing i've ever made." },
+  { id: "midnight-mustache", name: "'Midnight Mustache' Tee", print: "Midnight Mustache", small: "up til 3am again", type: "tee",
+    price: 28, color: "#3d0066", ink: "#00e5ff", stache: "curly", motif: "bat",
+    desc: "purple tee w/ a cyan curly stache + bat. for the night owls." },
+  { id: "pencil-pain", name: "'Pencil Stache, Pen Pal Pain' Sweater", print: "Pencil Stache Pen Pal Pain", small: "write back pls", type: "sweater",
+    price: 44, color: "#0d0d0d", ink: "#ffffff", stache: "pencil", motif: "star", soldOut: true,
+    desc: "black + white crewneck. sold out rn, making more soon!!" },
 ];
 
 /* ---------- (u don't need to edit below here unless u want to) ---------- */
@@ -79,7 +80,15 @@ const store = {
 };
 
 /* ---------- placeholder garment art ---------- */
+const STACHES = {
+  handlebar: `M100 112 C 92 104, 78 104, 70 114 C 64 120, 56 120, 52 110 C 48 124, 62 132, 74 126 C 84 122, 92 120, 100 122 C 108 120, 116 122, 126 126 C 138 132, 152 124, 148 110 C 144 120, 136 120, 130 114 C 122 104, 108 104, 100 112 Z`,
+  chevron: `M100 108 C 90 100, 70 101, 62 120 C 76 126, 90 125, 100 120 C 110 125, 124 126, 138 120 C 130 101, 110 100, 100 108 Z`,
+  curly: `M100 112 C 92 104, 78 104, 70 114 C 64 120, 54 120, 50 112 C 48 106, 54 102, 58 106 C 54 106, 54 112, 58 112 C 52 126, 64 132, 76 126 C 86 122, 94 120, 100 122 C 106 120, 114 122, 124 126 C 136 132, 148 126, 142 112 C 146 112, 146 106, 142 106 C 146 102, 152 106, 150 112 C 146 120, 136 120, 130 114 C 122 104, 108 104, 100 112 Z`,
+  pencil: `M66 118 Q 84 108, 100 113 Q 116 108, 134 118 Q 116 115, 100 117 Q 84 115, 66 118 Z`,
+};
+
 const MOTIFS = {
+  tear: ink => `<path fill="${ink}" d="M100 80 C 86 102, 84 116, 100 118 C 116 116, 114 102, 100 80 Z"/><path fill="currentColor" opacity=".5" d="M94 104 C 92 110, 94 112, 97 112 C 95 110, 95 107, 94 104 Z"/>`,
   skull: ink => `<g fill="${ink}"><path d="M100 82c-17 0-28 11-28 26 0 9 4 15 10 19v9h36v-9c6-4 10-10 10-19 0-15-11-26-28-26z"/></g>
     <g fill="currentColor"><circle cx="89" cy="108" r="7"/><circle cx="111" cy="108" r="7"/><path d="M100 115l-4 7h8z"/>
     <rect x="88" y="129" width="3" height="7"/><rect x="95" y="129" width="3" height="7"/><rect x="102" y="129" width="3" height="7"/><rect x="109" y="129" width="3" height="7"/></g>`,
@@ -136,7 +145,8 @@ function garmentSVG(p) {
       <text x="100" y="${textTop - (l2 ? 8 : 0)}" font-size="${l1.length > 14 ? 11 : 14}">${l1}</text>
       ${l2 ? `<text x="100" y="${textTop + 6}" font-size="${l2.length > 14 ? 11 : 14}">${l2}</text>` : ""}
     </g>
-    <g transform="translate(0 ${motifY}) translate(100 110) scale(.82) translate(-100 -110)">${MOTIFS[p.motif](ink)}</g>
+    ${p.motif ? `<g transform="translate(0 ${motifY - 20}) translate(100 110) scale(.42) translate(-100 -110)">${MOTIFS[p.motif](ink)}</g>` : ""}
+    <path transform="translate(0 ${motifY + 12})" d="${STACHES[p.stache] || STACHES.handlebar}" fill="${ink}" stroke="#000" stroke-width="1.5" stroke-linejoin="round"/>
     <text x="100" y="${p.type === "hoodie" ? 142 : 166}" font-family="monospace" font-size="7" fill="${ink}" text-anchor="middle" opacity=".85">~ ${p.small} ~</text>
   </svg>`;
 }
@@ -171,7 +181,7 @@ function renderShop() {
       ${tag}
       <button type="button" class="img" data-view="${p.id}" aria-label="view ${p.name}">${garmentSVG(p)}</button>
       <h4>${p.name}</h4>
-      <div class="meta">${p.type} · made 2 order</div>
+      <div class="meta">${p.type} · handmade by me</div>
       <div class="price">${money(p.price)}${p.was ? `<s>${money(p.was)}</s>` : ""}</div>
       ${p.soldOut ? "" : `<label class="size-pick">size: <select id="size-${p.id}" data-size-for="${p.id}">${sizeOptions()}</select></label>`}
       <button type="button" class="btn-glitter" data-add="${p.id}" ${p.soldOut ? "disabled" : ""}>
@@ -195,8 +205,8 @@ function openModal(id) {
       <dl>
         <dt>type:</dt><dd>${p.type}</dd>
         <dt>sizes:</dt><dd>XS–3XL (2XL + 3XL are +${money(BIG_SIZE_EXTRA)})</dd>
-        <dt>made in:</dt><dd>${MADE_IN}, then it ships</dd>
-        <dt>design:</dt><dd>original, drawn by me ♥</dd>
+        <dt>shipping:</dt><dd>${SHIPS_IN}</dd>
+        <dt>made by:</dt><dd>me!! designed + made by hand ♥</dd>
       </dl>
       ${p.soldOut ? "" : `<div class="pickers">
         <label class="size-pick">size: <select id="m-size" data-size-for="${p.id}">${sizeOptions()}</select></label>
@@ -341,31 +351,9 @@ function checkout() {
   showSendWindow("checkout.exe", "almost done!! ♥", "fill in ur name + address at the bottom, then", subject, body);
 }
 
-function customRequest(e) {
-  e.preventDefault();
-  const v = id => $(id).value.trim();
-  const typeLabel = $("#cu-type").selectedOptions[0].textContent;
-  const body = [
-    "heyyy!! i want a custom piece:",
-    "",
-    `name: ${v("#cu-name")}`,
-    `reach me at: ${v("#cu-contact")}`,
-    `item: ${typeLabel}`,
-    `size: ${v("#cu-size")}`,
-    `how many: ${v("#cu-qty") || 1}`,
-    `colors: ${v("#cu-colors") || "surprise me"}`,
-    "",
-    "my idea:",
-    v("#cu-idea"),
-    "",
-    "thx!! xoxo",
-  ].join("\n");
-  showSendWindow("custom_order.exe", "ur idea is ready 2 send!! ♥", "i'll reply w/ a mockup + price.", `RaWr ThReAdZ custom request - ${typeLabel}`, body);
-}
-
 /* ---------- comments ---------- */
 const SEED_COMMENTS = [
-  { name: "xXsk8rboiXx", av: "🛹", text: "omg the velvet coffin hoodie?!?! i NEED it. thx 4 the add!! pc4pc?", when: "Oct 3 2026 11:47 PM" },
+  { name: "xXsk8rboiXx", av: "🛹", text: "omg the 'i mustache u 2 leave me alone' sweater?!?! i NEED it. thx 4 the add!! pc4pc?", when: "Oct 3 2026 11:47 PM" },
   { name: "~*sCeNe QuEeN*~", av: "👑", text: "got my order today and it came w/ STICKERS and a lil note ♥♥♥ 10/10 would rawr again", when: "Sep 28 2026 3:12 AM" },
   { name: "brokenmascara89", av: "🖤", text: "ur page layout is giving me flashbacks in the best way. ordered 2 tees, the bundle discount is clutch", when: "Sep 21 2026 9:09 PM" },
 ];
@@ -413,12 +401,12 @@ function rotateMood() {
 }
 
 const SONGS = [
-  "the black parade is dead (but my closet isn't)",
-  "midnight eyeliner - cry til dawn (acoustic)",
-  "velvet coffin - my heart is a bat, it only comes out at night",
-  "static valentine - i wrote ur name on my converse in sharpie",
-  "rawr means forever - dinosaurs don't cry (but i do)",
-  "neon mascara - this song has a really long title so u know it's emo",
+  "stache til dawn (acoustic version)",
+  "mustache in the rain - my tears r just mustache wax",
+  "sad stache club - i shaved my heart (and it grew back)",
+  "midnight mustache - i drew a stache on ur picture in sharpie",
+  "handlebar of sadness - ride away from my feelings",
+  "mascara & mustaches - this song has a really long title so u know it's emo",
 ];
 let songIdx = 0;
 function setSong(i) {
@@ -488,7 +476,6 @@ $("#modal-close").addEventListener("click", closeModal);
 $("#modal").addEventListener("click", e => { if (e.target.id === "modal") closeModal(); });
 document.addEventListener("keydown", e => { if (e.key === "Escape") { closeModal(); closeCart(); } });
 $("#comment-form").addEventListener("submit", postComment);
-$("#custom-form").addEventListener("submit", customRequest);
 $("#add-friend").addEventListener("click", e => { e.preventDefault(); toast("friend request sent!! ♥ (u r now in my top 8 of luv)"); });
 $("#msg-link").addEventListener("click", e => { e.preventDefault(); window.location.href = `mailto:${SHOP_EMAIL}?subject=${encodeURIComponent("hiii from ur shop page")}`; });
 $("#prev-song").addEventListener("click", () => setSong(songIdx - 1));
