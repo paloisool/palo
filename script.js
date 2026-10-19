@@ -398,7 +398,7 @@ const SONGS = [
   "escape the fate - situations",
   "black veil brides - knives and pens",
   "blessthefall - hey baby, here's that song you wanted",
-  "sleeping with sirens - if i'm james dean, you're audrey hepburn",
+  "mayday parade - jamie all over",
   "falling in reverse - the drug in me is you",
   "bring me the horizon - chelsea smile",
   "of mice & men - second & sebring",
