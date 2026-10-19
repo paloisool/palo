@@ -54,16 +54,16 @@ const PRODUCTS = [
     desc: "cyan tee, white chevron stache w/ a raindrop (or a tear?? u decide)." },
   { id: "emo-stache", name: "'Emo-Stache' Tee", print: "Emo Stache", small: "side bangs + side burns", type: "tee",
     price: 26, color: "#ffffff", ink: "#ff0080", stache: "handlebar", motif: "broken",
-    desc: "white tee w/ a hot pink handlebar + broken heart. the og design that started it all." },
+    desc: "white tee w/ a hot pink handlebar + broken heart. the og design that started the brand." },
   { id: "sk8r-stache", name: "'Sk8r Stache' Sweater", print: "Sk8r Stache", small: "kickflip ur feelings", type: "sweater",
     price: 46, color: "#ff2fa0", ink: "#0d0d0d", stache: "chevron", motif: "bolt", tag: "HOT",
-    desc: "pink crewneck w/ a black chevron stache + lightning bolt. the most scene thing i've ever made." },
+    desc: "pink crewneck w/ a black chevron stache + lightning bolt. the most scene thing we've ever dropped." },
   { id: "midnight-mustache", name: "'Midnight Mustache' Tee", print: "Midnight Mustache", small: "up til 3am again", type: "tee",
     price: 28, color: "#3d0066", ink: "#00e5ff", stache: "curly", motif: "bat",
     desc: "purple tee w/ a cyan curly stache + bat. for the night owls." },
   { id: "pencil-pain", name: "'Pencil Stache, Pen Pal Pain' Sweater", print: "Pencil Stache Pen Pal Pain", small: "write back pls", type: "sweater",
     price: 44, color: "#0d0d0d", ink: "#ffffff", stache: "pencil", motif: "star", soldOut: true,
-    desc: "black + white crewneck. sold out rn, making more soon!!" },
+    desc: "black + white crewneck. sold out rn, restock coming soon!!" },
 ];
 
 /* ---------- (u don't need to edit below here unless u want to) ---------- */
@@ -181,7 +181,7 @@ function renderShop() {
       ${tag}
       <button type="button" class="img" data-view="${p.id}" aria-label="view ${p.name}">${garmentSVG(p)}</button>
       <h4>${p.name}</h4>
-      <div class="meta">${p.type} · handmade by me</div>
+      <div class="meta">${p.type} · RaWr ThReAdZ original</div>
       <div class="price">${money(p.price)}${p.was ? `<s>${money(p.was)}</s>` : ""}</div>
       ${p.soldOut ? "" : `<label class="size-pick">size: <select id="size-${p.id}" data-size-for="${p.id}">${sizeOptions()}</select></label>`}
       <button type="button" class="btn-glitter" data-add="${p.id}" ${p.soldOut ? "disabled" : ""}>
@@ -206,7 +206,7 @@ function openModal(id) {
         <dt>type:</dt><dd>${p.type}</dd>
         <dt>sizes:</dt><dd>XS–3XL (2XL + 3XL are +${money(BIG_SIZE_EXTRA)})</dd>
         <dt>shipping:</dt><dd>${SHIPS_IN}</dd>
-        <dt>made by:</dt><dd>me!! designed + made by hand ♥</dd>
+        <dt>brand:</dt><dd>RaWr ThReAdZ original ♥</dd>
       </dl>
       ${p.soldOut ? "" : `<div class="pickers">
         <label class="size-pick">size: <select id="m-size" data-size-for="${p.id}">${sizeOptions()}</select></label>

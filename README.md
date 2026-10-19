@@ -1,6 +1,6 @@
 # xX RaWr ThReAdZ Xx
 
-A y2k emo/scene shop page in the style of a 2006 MySpace profile, for selling your own handmade emo mustache tees and sweaters. It's plain HTML, CSS and JS with no build step, so you can drop it on Neocities, GitHub Pages or any static host.
+A y2k emo/scene shop page in the style of a 2006 MySpace profile, for an emo clothing brand selling its own mustache tees and sweaters. It's plain HTML, CSS and JS with no build step, so you can drop it on Neocities, GitHub Pages or any static host.
 
 ## Make it yours (all in `script.js`, top section)
 
