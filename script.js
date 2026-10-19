@@ -19,51 +19,50 @@ const SIZES = ["XS", "S", "M", "L", "XL", "2XL", "3XL"];
 /* YOUR SHIRTS ~ buyers pick a size, then add to cart.
  *  type:   "tee" | "sweater"
  *  print:  the words on the placeholder drawing
- *  small:  tiny text under the mustache
- *  img:    path to a real photo (e.g. "images/stache-til-dawn.jpg"). leave out to use the drawn placeholder.
+ *  small:  tiny text under the graphic
+ *  img:    path to a real photo (e.g. "images/cry-til-dawn.jpg"). leave out to use the drawn placeholder.
  *  color / ink: placeholder shirt color + print color
- *  stache: placeholder mustache: handlebar | chevron | curly | pencil
- *  motif:  little extra above the mustache: tear | skull | heart | broken | star | bat | crown | bolt
+ *  motif:  placeholder graphic: skull | heart | broken | star | bat | dino | bolt | crown | tear
  *  soldOut: true to stop taking orders for it
  *  top8:   true to put it in the Top 8
  */
 const PRODUCTS = [
-  { id: "stache-til-dawn", name: "'Stache Til Dawn' Tee", print: "Stache Til Dawn", small: "cry. groom. repeat.", type: "tee",
-    price: 28, was: 32, color: "#0d0d0d", ink: "#ff2fa0", stache: "handlebar", motif: "tear", tag: "NEW", top8: true,
-    desc: "a hot pink handlebar stache shedding one single tear. on a soft black tee. my best seller 4 a reason." },
-  { id: "mustache-alone", name: "'I Mustache U 2 Leave Me Alone' Sweater", print: "I Mustache U 2 Leave Me Alone", small: "pls knock first", type: "sweater",
-    price: 48, color: "#1a1a1a", ink: "#9d00ff", stache: "curly", motif: "bat", tag: "HOT", top8: true,
-    desc: "black crewneck w/ a purple curly stache + a lil bat. for when ur door is closed and ur music is LOUD." },
-  { id: "rawr-mustache", name: "'Rawr Means I Mustache U' Tee", print: "Rawr Means I Mustache U", small: "(in dinosaur)", type: "tee",
-    price: 28, color: "#39ff14", ink: "#0d0d0d", stache: "chevron", motif: "heart", tag: "NEW", top8: true,
-    desc: "neon green tee, big black chevron stache, tiny heart. a love letter u can wear." },
-  { id: "sad-stache-club", name: "'Sad Stache Club' Sweater", print: "Sad Stache Club", small: "members only", type: "sweater",
-    price: 46, color: "#2b0d1f", ink: "#39ff14", stache: "handlebar", motif: "skull", top8: true,
-    desc: "maroon crewneck w/ a lime skull + handlebar stache. oversized, sleeves long enough 2 hide ur hands in." },
-  { id: "broken-stache", name: "'Broken Heart, Perfect Stache' Tee", print: "Broken Heart Perfect Stache", small: "at least i look good", type: "tee",
-    price: 28, color: "#ff69b4", ink: "#0d0d0d", stache: "pencil", motif: "broken", top8: true,
-    desc: "hot pink tee w/ a broken heart over a skinny lil pencil stache. sad but well groomed." },
-  { id: "handlebar-sadness", name: "'Handlebar of Sadness' Tee", print: "Handlebar of Sadness", small: "est. 2006", type: "tee",
-    price: 30, color: "#0d0d0d", ink: "#ffd700", stache: "handlebar", motif: "crown", top8: true,
-    desc: "black tee, gold handlebar w/ a crown on top. king of feeling things." },
-  { id: "mascara-mustaches", name: "'Mascara & Mustaches' Sweater", print: "Mascara & Mustaches", small: "smudged on purpose", type: "sweater",
-    price: 48, color: "#111111", ink: "#ff2fa0", stache: "curly", motif: "star", top8: true,
-    desc: "black crewneck w/ a pink curly stache + star. soft inside, scene on the outside." },
-  { id: "stache-in-rain", name: "'Mustache in the Rain' Tee", print: "Mustache in the Rain", small: "no umbrella. no regrets.", type: "tee",
-    price: 28, color: "#00b7d9", ink: "#ffffff", stache: "chevron", motif: "tear", top8: true,
-    desc: "cyan tee, white chevron stache w/ a raindrop (or a tear?? u decide)." },
-  { id: "emo-stache", name: "'Emo-Stache' Tee", print: "Emo Stache", small: "side bangs + side burns", type: "tee",
-    price: 26, color: "#ffffff", ink: "#ff0080", stache: "handlebar", motif: "broken",
-    desc: "white tee w/ a hot pink handlebar + broken heart. the og design that started it all." },
-  { id: "sk8r-stache", name: "'Sk8r Stache' Sweater", print: "Sk8r Stache", small: "kickflip ur feelings", type: "sweater",
-    price: 46, color: "#ff2fa0", ink: "#0d0d0d", stache: "chevron", motif: "bolt", tag: "HOT",
-    desc: "pink crewneck w/ a black chevron stache + lightning bolt. the most scene thing i've ever dropped." },
-  { id: "midnight-mustache", name: "'Midnight Mustache' Tee", print: "Midnight Mustache", small: "up til 3am again", type: "tee",
-    price: 28, color: "#3d0066", ink: "#00e5ff", stache: "curly", motif: "bat",
-    desc: "purple tee w/ a cyan curly stache + bat. for the night owls." },
-  { id: "pencil-pain", name: "'Pencil Stache, Pen Pal Pain' Sweater", print: "Pencil Stache Pen Pal Pain", small: "write back pls", type: "sweater",
-    price: 44, color: "#0d0d0d", ink: "#ffffff", stache: "pencil", motif: "star", soldOut: true,
-    desc: "black + white crewneck. sold out rn, restock coming soon!!" },
+  { id: "cry-til-dawn", name: "'Cry Til Dawn' Tee", print: "Cry Til Dawn", small: "est. 2005", type: "tee",
+    price: 28, was: 32, color: "#0d0d0d", ink: "#ff2fa0", motif: "broken", tag: "NEW", top8: true,
+    desc: "my best seller 4 a reason. hot pink broken heart on a soft black tee. made for crying in the car w/ the windows down." },
+  { id: "leave-me-alone", name: "'Pls Leave Me Alone' Sweater", print: "Pls Leave Me Alone", small: "knock first", type: "sweater",
+    price: 48, color: "#1a1a1a", ink: "#9d00ff", motif: "bat", tag: "HOT", top8: true,
+    desc: "black crewneck w/ a purple bat. for when ur door is closed and ur music is LOUD." },
+  { id: "rawr-xd", name: "'Rawr Means I Love U' Tee", print: "Rawr Means I Love U", small: "(in dinosaur)", type: "tee",
+    price: 28, color: "#39ff14", ink: "#0d0d0d", motif: "dino", tag: "NEW", top8: true,
+    desc: "neon green tee w/ a lil dino saying rawr. a love letter u can wear." },
+  { id: "sad-kids-club", name: "'Sad Kids Club' Sweater", print: "Sad Kids Club", small: "members only", type: "sweater",
+    price: 46, color: "#2b0d1f", ink: "#39ff14", motif: "skull", top8: true,
+    desc: "maroon crewneck w/ a lime skull. oversized, sleeves long enough 2 hide ur hands in." },
+  { id: "checkered-heart", name: "'Checkered Heart' Tee", print: "Sk8r Hearts", small: "kickflip ur feelings", type: "tee",
+    price: 28, color: "#ff69b4", ink: "#0d0d0d", motif: "heart", top8: true,
+    desc: "hot pink tee w/ a black checkered heart. pair w/ a studded belt 4 the full effect." },
+  { id: "king-of-feelings", name: "'King of Feelings' Tee", print: "King of Feelings", small: "royalty of sadness", type: "tee",
+    price: 30, color: "#0d0d0d", ink: "#ffd700", motif: "crown", top8: true,
+    desc: "black tee w/ a gold crown. for the one who feels everything the most." },
+  { id: "eyeliner-sweater", name: "'Eyeliner Forever' Sweater", print: "Eyeliner Forever", small: "smudged on purpose", type: "sweater",
+    price: 48, color: "#111111", ink: "#ff2fa0", motif: "star", top8: true,
+    desc: "black crewneck w/ a pink star. soft inside, scene on the outside." },
+  { id: "dancing-in-rain", name: "'Crying in the Rain' Tee", print: "Crying in the Rain", small: "no umbrella. no regrets.", type: "tee",
+    price: 28, color: "#00b7d9", ink: "#ffffff", motif: "tear", top8: true,
+    desc: "cyan tee w/ a big white raindrop (or a tear?? u decide)." },
+  { id: "glitter-gloom", name: "'Glitter & Gloom' Tee", print: "Glitter & Gloom", small: "sparkle sadly", type: "tee",
+    price: 26, color: "#ffffff", ink: "#ff0080", motif: "broken",
+    desc: "white tee w/ a hot pink broken heart. the og design that started it all." },
+  { id: "static-scene", name: "'Static Scene Queen' Sweater", print: "Static Scene Queen", small: "zap ur heart", type: "sweater",
+    price: 46, color: "#ff2fa0", ink: "#0d0d0d", motif: "bolt", tag: "HOT",
+    desc: "pink crewneck w/ a black lightning bolt. the most scene thing i've ever dropped." },
+  { id: "3am-again", name: "'Up Til 3am Again' Tee", print: "Up Til 3am Again", small: "night owls only", type: "tee",
+    price: 28, color: "#3d0066", ink: "#00e5ff", motif: "bat",
+    desc: "purple tee w/ a cyan bat. for the night owls making layouts til sunrise." },
+  { id: "top-8-drama", name: "'Top 8 Drama' Sweater", print: "Top 8 Drama", small: "u got bumped", type: "sweater",
+    price: 44, color: "#0d0d0d", ink: "#ffffff", motif: "star", soldOut: true,
+    desc: "black + white star crewneck. sold out rn, restock coming soon!!" },
 ];
 
 /* ---------- (u don't need to edit below here unless u want to) ---------- */
@@ -80,13 +79,6 @@ const store = {
 };
 
 /* ---------- placeholder garment art ---------- */
-const STACHES = {
-  handlebar: `M100 112 C 92 104, 78 104, 70 114 C 64 120, 56 120, 52 110 C 48 124, 62 132, 74 126 C 84 122, 92 120, 100 122 C 108 120, 116 122, 126 126 C 138 132, 152 124, 148 110 C 144 120, 136 120, 130 114 C 122 104, 108 104, 100 112 Z`,
-  chevron: `M100 108 C 90 100, 70 101, 62 120 C 76 126, 90 125, 100 120 C 110 125, 124 126, 138 120 C 130 101, 110 100, 100 108 Z`,
-  curly: `M100 112 C 92 104, 78 104, 70 114 C 64 120, 54 120, 50 112 C 48 106, 54 102, 58 106 C 54 106, 54 112, 58 112 C 52 126, 64 132, 76 126 C 86 122, 94 120, 100 122 C 106 120, 114 122, 124 126 C 136 132, 148 126, 142 112 C 146 112, 146 106, 142 106 C 146 102, 152 106, 150 112 C 146 120, 136 120, 130 114 C 122 104, 108 104, 100 112 Z`,
-  pencil: `M66 118 Q 84 108, 100 113 Q 116 108, 134 118 Q 116 115, 100 117 Q 84 115, 66 118 Z`,
-};
-
 const MOTIFS = {
   tear: ink => `<path fill="${ink}" d="M100 80 C 86 102, 84 116, 100 118 C 116 116, 114 102, 100 80 Z"/><path fill="currentColor" opacity=".5" d="M94 104 C 92 110, 94 112, 97 112 C 95 110, 95 107, 94 104 Z"/>`,
   skull: ink => `<g fill="${ink}"><path d="M100 82c-17 0-28 11-28 26 0 9 4 15 10 19v9h36v-9c6-4 10-10 10-19 0-15-11-26-28-26z"/></g>
@@ -145,8 +137,7 @@ function garmentSVG(p) {
       <text x="100" y="${textTop - (l2 ? 8 : 0)}" font-size="${l1.length > 14 ? 11 : 14}">${l1}</text>
       ${l2 ? `<text x="100" y="${textTop + 6}" font-size="${l2.length > 14 ? 11 : 14}">${l2}</text>` : ""}
     </g>
-    ${p.motif ? `<g transform="translate(0 ${motifY - 20}) translate(100 110) scale(.42) translate(-100 -110)">${MOTIFS[p.motif](ink)}</g>` : ""}
-    <path transform="translate(0 ${motifY + 12})" d="${STACHES[p.stache] || STACHES.handlebar}" fill="${ink}" stroke="#000" stroke-width="1.5" stroke-linejoin="round"/>
+    <g transform="translate(0 ${motifY}) translate(100 110) scale(.82) translate(-100 -110)">${MOTIFS[p.motif](ink)}</g>
     <text x="100" y="${p.type === "hoodie" ? 142 : 166}" font-family="monospace" font-size="7" fill="${ink}" text-anchor="middle" opacity=".85">~ ${p.small} ~</text>
   </svg>`;
 }
@@ -353,7 +344,7 @@ function checkout() {
 
 /* ---------- comments ---------- */
 const SEED_COMMENTS = [
-  { name: "xXsk8rboiXx", av: "🛹", text: "omg the 'i mustache u 2 leave me alone' sweater?!?! i NEED it. thx 4 the add!! pc4pc?", when: "Oct 3 2026 11:47 PM" },
+  { name: "xXsk8rboiXx", av: "🛹", text: "omg the 'pls leave me alone' sweater?!?! i NEED it. thx 4 the add!! pc4pc?", when: "Oct 3 2026 11:47 PM" },
   { name: "~*sCeNe QuEeN*~", av: "👑", text: "got my order today and it came w/ STICKERS and a lil note ♥♥♥ 10/10 would rawr again", when: "Sep 28 2026 3:12 AM" },
   { name: "brokenmascara89", av: "🖤", text: "ur page layout is giving me flashbacks in the best way. ordered 2 tees, the bundle discount is clutch", when: "Sep 21 2026 9:09 PM" },
 ];
@@ -401,12 +392,12 @@ function rotateMood() {
 }
 
 const SONGS = [
-  "stache til dawn (acoustic version)",
-  "mustache in the rain - my tears r just mustache wax",
-  "sad stache club - i shaved my heart (and it grew back)",
-  "midnight mustache - i drew a stache on ur picture in sharpie",
+  "cry til dawn (acoustic version)",
+  "crying in the rain - my tears r just eyeliner now",
+  "sad kids club - my heart is a bat, it only comes out at night",
+  "up til 3am again - i wrote ur name on my converse in sharpie",
   "handlebar of sadness - ride away from my feelings",
-  "mascara & mustaches - this song has a really long title so u know it's emo",
+  "eyeliner forever - this song has a really long title so u know it's emo",
 ];
 let songIdx = 0;
 function setSong(i) {
