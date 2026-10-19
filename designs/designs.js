@@ -196,6 +196,66 @@
   // ---------- the designs ----------
   const DESIGNS = [
     {
+      id: "scenester-bat",
+      name: "Scenester Bat",
+      blurb: "a chubby lil bat w/ a pink bow + one tiny fang shredding a hot pink guitar, w/ neon splatter, hearts + drippy marker letters.",
+      inks: [LIME, PINK, "#6f6a8a", "#9a94b5", WHITE, BLACK], tees: ["#1b2340", BLACK],
+      art: () => {
+        const FUR = "#6f6a8a", BELLY = "#9a94b5", WING = "#4f4a66";
+        const ol = (d, fill, w = 14) => `<path d="${d}" fill="${fill}" stroke="${BLACK}" stroke-width="${w}" stroke-linejoin="round"/>`;
+        const wing = "M640,900 C520,760 330,720 190,800 C245,830 258,880 238,935 C300,925 342,955 340,1005 C400,985 452,1005 470,1058 C520,1015 580,1012 625,1045 Z";
+        const heart = (x, y, sz, c) => `<path d="${heartPath(x, y, sz)}" fill="${c}"/>`;
+        let strings = "";
+        [-9, -3, 3, 9].forEach(y => { strings += `<path d="M-120,${y} L600,${y * 0.6}" stroke="${WHITE}" stroke-width="2.5"/>`; });
+        let frets = "";
+        for (let x = 120; x < 520; x += 42) frets += `<path d="M${x},-18 L${x},18" stroke="#c9c9c9" stroke-width="3"/>`;
+        const guitar = `<g transform="translate(700 1150) rotate(-35)">
+          ${ol("M-240,-70 L60,-84 L95,0 L60,84 L-240,70 L-150,0 Z", PINK, 14)}
+          <path d="M-120,-40 L40,-48 L60,0 L40,48 L-120,40 L-70,0 Z" fill="${BLACK}"/>
+          <rect x="70" y="-20" width="460" height="40" fill="#3a2a1a" stroke="${BLACK}" stroke-width="8"/>
+          ${frets}
+          ${ol("M525,-26 L640,-46 L660,0 L640,40 L525,26 Z", PINK, 10)}
+          <g fill="${WHITE}"><circle cx="575" cy="-26" r="6"/><circle cx="610" cy="-30" r="6"/><circle cx="575" cy="24" r="6"/><circle cx="610" cy="28" r="6"/></g>
+          <rect x="-40" y="-30" width="22" height="60" fill="${WHITE}" stroke="${BLACK}" stroke-width="4"/><rect x="10" y="-30" width="22" height="60" fill="${WHITE}" stroke="${BLACK}" stroke-width="4"/>
+          ${strings}</g>`;
+        return `
+        ${distressMask("worn-bat", 47, 0.8)}
+        <g mask="url(#worn-bat)">
+          ${splat(1080, 760, 170, LIME, 31)}${splat(420, 1260, 130, PINK, 32)}${splat(1150, 1300, 60, PINK, 33)}${splat(330, 760, 50, LIME, 34)}
+          <g transform="rotate(-6 750 420)">
+            <text x="750" y="460" font-family="'Permanent Marker'" font-size="230" text-anchor="middle" textLength="1080" lengthAdjust="spacingAndGlyphs" fill="${BLACK}" stroke="${BLACK}" stroke-width="30" stroke-linejoin="round">scenester</text>
+            <text x="750" y="460" font-family="'Permanent Marker'" font-size="230" text-anchor="middle" textLength="1080" lengthAdjust="spacingAndGlyphs" fill="${LIME}">scenester</text>
+            ${[[330, 70], [560, 130], [790, 50], [1010, 100]].map(([x, h]) => `<path d="M${x - 12},440 L${x - 8},${470 + h} A8 8 0 0 0 ${x + 8},${470 + h} L${x + 12},440 Z" fill="${LIME}"/><circle cx="${x}" cy="${473 + h}" r="11" fill="${LIME}"/>`).join("")}
+          </g>
+          ${ol(wing, WING)}<g transform="translate(1500 0) scale(-1 1)">${ol(wing, WING)}</g>
+          <g fill="none" stroke="${BELLY}" stroke-width="7" stroke-linecap="round" opacity=".8">
+            <path d="M600,920 L250,820 M590,960 L330,980 M600,1000 L460,1040"/><path d="M900,920 L1250,820 M910,960 L1170,980 M900,1000 L1040,1040"/></g>
+          <ellipse cx="650" cy="1290" rx="60" ry="36" fill="${FUR}" stroke="${BLACK}" stroke-width="12"/><ellipse cx="850" cy="1290" rx="60" ry="36" fill="${FUR}" stroke="${BLACK}" stroke-width="12"/>
+          <ellipse cx="750" cy="1090" rx="215" ry="205" fill="${FUR}" stroke="${BLACK}" stroke-width="14"/>
+          <ellipse cx="750" cy="1150" rx="125" ry="115" fill="${BELLY}"/>
+          ${ol("M590,705 L555,460 L705,640 Z", FUR)}${ol("M910,705 L945,460 L795,640 Z", FUR)}
+          <path d="M600,665 L578,530 L668,640 Z M900,665 L922,530 L832,640 Z" fill="${PINK}" opacity=".85"/>
+          <circle cx="750" cy="830" r="215" fill="${FUR}" stroke="${BLACK}" stroke-width="14"/>
+          <path d="M600,700 C650,660 720,650 760,670" fill="none" stroke="${BELLY}" stroke-width="10" stroke-linecap="round" opacity=".7"/>
+          <g transform="rotate(-18 625 655)">
+            ${ol("M625,655 L540,600 L545,715 Z", PINK, 10)}${ol("M625,655 L710,600 L705,715 Z", PINK, 10)}
+            <circle cx="625" cy="657" r="30" fill="${PINK}" stroke="${BLACK}" stroke-width="10"/></g>
+          <ellipse cx="672" cy="850" rx="52" ry="64" fill="${BLACK}"/><ellipse cx="828" cy="850" rx="52" ry="64" fill="${BLACK}"/>
+          <circle cx="690" cy="826" r="19" fill="${WHITE}"/><circle cx="660" cy="872" r="9" fill="${WHITE}"/>
+          <circle cx="846" cy="826" r="19" fill="${WHITE}"/><circle cx="816" cy="872" r="9" fill="${WHITE}"/>
+          <ellipse cx="625" cy="925" rx="38" ry="20" fill="${PINK}" opacity=".7"/><ellipse cx="875" cy="925" rx="38" ry="20" fill="${PINK}" opacity=".7"/>
+          <path d="M722,925 Q736,942 750,925 Q764,942 778,925" fill="none" stroke="${BLACK}" stroke-width="9" stroke-linecap="round"/>
+          <path d="M760,934 L768,962 L776,932 Z" fill="${WHITE}" stroke="${BLACK}" stroke-width="4"/>
+          ${guitar}
+          <ellipse cx="659" cy="1180" rx="46" ry="34" fill="${FUR}" stroke="${BLACK}" stroke-width="12"/>
+          <ellipse cx="946" cy="978" rx="40" ry="32" fill="${FUR}" stroke="${BLACK}" stroke-width="12"/>
+          ${heart(330, 1000, 90, PINK)}${heart(1210, 560, 70, PINK)}${heart(1240, 1150, 60, LIME)}${heart(270, 1480, 60, LIME)}${heart(1080, 1500, 80, PINK)}
+          <path d="${starPath(210, 600, 34, 10)}" fill="${LIME}"/><path d="${starPath(1330, 900, 30, -10)}" fill="${WHITE}"/><path d="${starPath(760, 1500, 28, 6)}" fill="${LIME}"/>
+          ${pixels(SPARK, 1300, 1380, 14, { X: WHITE })}${pixels(SPARK, 470, 1520, 12, { X: PINK })}
+        </g>`;
+      },
+    },
+    {
       id: "rawr-monster",
       name: "RAWR! Monster",
       blurb: "a lime green fanged monster bursting out of white + pink paint splatter, yelling RAWR! w/ OMG + XD speech bubbles.",
