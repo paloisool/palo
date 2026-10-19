@@ -403,7 +403,7 @@ const SONGS = [
   "bring me the horizon - chelsea smile",
   "of mice & men - second & sebring",
   "the devil wears prada - hey john, what's your name again?",
-  "fall out boy - sugar, we're goin down",
+  "a skylit drive - wires and the concept of breathing",
   "alesana - the thespian",
   "taking back sunday - cute without the 'e' (cut from the team)",
   "a day to remember - the downfall of us all",
