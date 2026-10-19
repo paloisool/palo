@@ -289,9 +289,31 @@ function checkout() {
     "thx!! xoxo",
   ].filter(l => l !== null).join("\n");
   const subject = `RaWr ThReAdZ order (${t.items.length} item${t.items.length > 1 ? "s" : ""}) - ${money(t.total)}`;
-  window.location.href = `mailto:${SHOP_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  toast("opening ur email app... hit send!! ♥");
-  if (PAY_LINK) setTimeout(() => window.open(PAY_LINK, "_blank", "noopener"), 1200);
+  const mailto = `mailto:${SHOP_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  closeCart();
+  $("#modal-title").textContent = "checkout.exe";
+  $("#modal-body").innerHTML = `
+    <div class="checkout-box">
+      <h3>almost done!! ♥</h3>
+      <p class="m-desc">send this order to <b class="select-me" id="shop-email"></b> and i'll reply w/ payment + shipping info. fill in ur name + address at the bottom first.</p>
+      <textarea id="order-text" class="order-text" rows="12" readonly></textarea>
+      <div class="checkout-actions">
+        <button type="button" class="btn-glitter" id="copy-order">copy order</button>
+        <a class="btn-glitter" id="mail-order" href="#">open email app</a>
+        ${PAY_LINK ? `<a class="btn-glitter" href="${PAY_LINK}" target="_blank" rel="noopener">pay link</a>` : ""}
+      </div>
+    </div>`;
+  $("#shop-email").textContent = SHOP_EMAIL;
+  $("#order-text").value = `${subject}\n\n${body}`;
+  $("#mail-order").href = mailto;
+  $("#copy-order").addEventListener("click", () => {
+    const ta = $("#order-text");
+    navigator.clipboard.writeText(ta.value)
+      .then(() => toast("order copied!! paste it in an email ♥"))
+      .catch(() => { ta.focus(); ta.select(); toast("select all + copy it ♥"); });
+  });
+  $("#modal").hidden = false;
+  $("#modal-close").focus();
 }
 
 /* ---------- comments ---------- */
