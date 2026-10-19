@@ -392,12 +392,26 @@ function rotateMood() {
 }
 
 const SONGS = [
-  "cry til dawn (acoustic version)",
-  "crying in the rain - my tears r just eyeliner now",
-  "sad kids club - my heart is a bat, it only comes out at night",
-  "up til 3am again - i wrote ur name on my converse in sharpie",
-  "handlebar of sadness - ride away from my feelings",
-  "eyeliner forever - this song has a really long title so u know it's emo",
+  "asking alexandria - the final episode (let's change the channel)",
+  "attack attack! - stick stickly",
+  "bullet for my valentine - tears don't fall",
+  "escape the fate - situations",
+  "black veil brides - knives and pens",
+  "pierce the veil - caraphernelia",
+  "sleeping with sirens - if i'm james dean, you're audrey hepburn",
+  "falling in reverse - the drug in me is you",
+  "bring me the horizon - chelsea smile",
+  "my chemical romance - helena",
+  "paramore - misery business",
+  "fall out boy - sugar, we're goin down",
+  "panic! at the disco - i write sins not tragedies",
+  "taking back sunday - cute without the 'e' (cut from the team)",
+  "a day to remember - the downfall of us all",
+  "the used - the taste of ink",
+  "chiodos - there's no penguins in alaska",
+  "underoath - writing on the walls",
+  "breathe carolina - blackout",
+  "dance gavin dance - me and zoloft get along just fine",
 ];
 let songIdx = 0;
 function setSong(i) {
