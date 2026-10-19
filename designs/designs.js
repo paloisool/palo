@@ -7,9 +7,9 @@
   const PINK = "#ff2fa0", LIME = "#39ff14", CYAN = "#00e5ff", WHITE = "#ffffff",
         BLACK = "#0a0a0a", LAV = "#b388ff",
         SCENE = "#1ab0ff", SCENE_MID = "#0b86e6", SCENE_DARK = "#032a66",
-        NEON = "#d4ff2a", BUBBLEGUM = "#ff9ad5";
+        NEON = "#d4ff2a", BUBBLEGUM = "#ff9ad5", BONE = "#f3e9c6";
 
-  const FONTS = "https://fonts.googleapis.com/css2?family=Anton&family=Metal+Mania&family=Nosifer&family=UnifrakturMaguntia&family=Press+Start+2P&family=Permanent+Marker&family=Bungee+Shade&display=swap";
+  const FONTS = "https://fonts.googleapis.com/css2?family=Anton&family=Creepster&family=Metal+Mania&family=Nosifer&family=UnifrakturMaguntia&family=Press+Start+2P&family=Permanent+Marker&family=Bungee+Shade&display=swap";
 
   // ---------- helpers ----------
   function pixels(grid, x, y, size, colors) {
@@ -167,6 +167,47 @@
 
   // ---------- the designs ----------
   const DESIGNS = [
+    {
+      id: "love-me-til-im-bones",
+      name: "Love Me Til I'm Bones",
+      blurb: "a worn ribcage w/ a leopard spine + a checkered heart splattered in pink, bats flying around. love me til i'm bones.",
+      inks: [BONE, PINK, BLACK], tees: [BLACK, "#1b2340"],
+      art: () => {
+        const outlineThenBone = (d, w) => `<path d="${d}" fill="none" stroke="${BLACK}" stroke-width="${w + 16}" stroke-linecap="round"/><path d="${d}" fill="none" stroke="${BONE}" stroke-width="${w}" stroke-linecap="round"/>`;
+        const wf = [0.62, 0.78, 0.9, 0.98, 1, 0.96, 0.86];
+        let ribs = "";
+        wf.forEach((f, i) => {
+          const y = 600 + i * 92, x = v => (750 + (v - 750) * f).toFixed(0);
+          const end = i > 4 ? `${x(1110)},${y + 200}` : `${x(1100)},${y + 210} C${x(1040)},${y + 250} ${x(960)},${y + 245} ${x(880)},${y + 215}`;
+          ribs += outlineThenBone(`M790,${y} C${x(1000)},${y - 70} ${x(1190)},${y + 20} ${x(1170)},${y + 120} C${x(1160)},${y + 160} ${x(1135)},${y + 190} ${end}`, 34 - i * 1.5);
+        });
+        let spine = "";
+        for (let k = 0; k < 6; k++) spine += `<rect x="712" y="${1030 + k * 58}" width="76" height="46" rx="16" fill="url(#leo-bone)" stroke="${BLACK}" stroke-width="10"/>`;
+        const drips = [[860, 120], [905, 230], [950, 90], [990, 170]]
+          .map(([x, h]) => `<path d="M${x - 16},1010 L${x - 12},${1050 + h} A 12 12 0 0 0 ${x + 12},${1050 + h} L${x + 16},1010 Z" fill="${PINK}"/>`).join("");
+        return `
+        ${leopardPattern("leo-bone", BONE, BONE, BLACK, 0.45, 0.45)}
+        <pattern id="rib-checks" width="64" height="64" patternUnits="userSpaceOnUse"><rect width="64" height="64" fill="${WHITE}"/><rect width="32" height="32" fill="${BLACK}"/><rect x="32" y="32" width="32" height="32" fill="${BLACK}"/></pattern>
+        <clipPath id="rib-heart"><path d="${heartPath(935, 760, 330)}"/></clipPath>
+        ${distressMask("worn-bones", 17, 1)}
+        <g mask="url(#worn-bones)">
+          ${text("LOVE ME", 750, 420, "'Creepster'", 250, PINK, 1000)}
+          ${spine}
+          <g>${ribs}</g><g transform="translate(1500 0) scale(-1 1)">${ribs}</g>
+          ${outlineThenBone("M735,560 C650,515 500,560 400,515", 30)}${outlineThenBone("M765,560 C850,515 1000,560 1100,515", 30)}
+          <path d="M750,535 C795,535 805,580 795,620 L783,905 C780,960 762,995 750,1015 C738,995 720,960 717,905 L705,620 C695,580 705,535 750,535 Z" fill="${BONE}" stroke="${BLACK}" stroke-width="12"/>
+          <path d="M712,700 L788,700 M716,800 L784,800 M720,900 L780,900" stroke="${BLACK}" stroke-width="7"/>
+          ${splat(940, 880, 120, PINK, 4)}${splat(470, 760, 45, PINK, 12)}
+          ${drips}
+          <rect x="740" y="700" width="400" height="400" fill="url(#rib-checks)" clip-path="url(#rib-heart)"/>
+          <path d="${heartPath(935, 760, 330)}" fill="none" stroke="${BLACK}" stroke-width="22"/>
+          <path d="${heartPath(935, 760, 330)}" fill="none" stroke="${WHITE}" stroke-width="8"/>
+          ${bat(330, 480, 0.75, BONE)}${bat(1200, 1300, 0.6, BONE)}${bat(1230, 620, 0.45, BONE)}${bat(270, 1250, 0.5, BONE)}
+          ${pixels(SPARK, 1240, 900, 16, { X: PINK })}${pixels(SPARK, 220, 960, 14, { X: PINK })}${pixels(SPARK, 1100, 1450, 12, { X: BONE })}
+          ${text("TIL I'M BONES", 750, 1630, "'Creepster'", 210, PINK, 1300)}
+        </g>`;
+      },
+    },
     {
       id: "neon-static",
       name: "Neon Static",
