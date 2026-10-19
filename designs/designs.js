@@ -6,7 +6,8 @@
 (function () {
   const PINK = "#ff2fa0", LIME = "#39ff14", CYAN = "#00e5ff", WHITE = "#ffffff",
         BLACK = "#0a0a0a", LAV = "#b388ff",
-        SCENE = "#1ab0ff", SCENE_MID = "#0b86e6", SCENE_DARK = "#032a66";
+        SCENE = "#1ab0ff", SCENE_MID = "#0b86e6", SCENE_DARK = "#032a66",
+        NEON = "#d4ff2a", BUBBLEGUM = "#ff9ad5";
 
   const FONTS = "https://fonts.googleapis.com/css2?family=Anton&family=Metal+Mania&family=Nosifer&family=UnifrakturMaguntia&family=Press+Start+2P&family=Permanent+Marker&family=Bungee+Shade&display=swap";
 
@@ -120,8 +121,100 @@
   const tallWord = (str, cx, baseline, size, stretch, len, attrs) =>
     `<g transform="translate(${cx} ${baseline}) scale(1 ${stretch})"><text x="0" y="0" font-family="'Anton'" font-size="${size}" text-anchor="middle" textLength="${len}" lengthAdjust="spacingAndGlyphs" ${attrs}>${str}</text></g>`;
 
+  // hand-drawn star outline (slight wobble, drawn twice for a sketchy line)
+  function sketchStar(cx, cy, R, color, width, seed, rot = 0) {
+    const rnd = seeded(seed);
+    const pts = n => {
+      let d = "";
+      for (let i = 0; i < 10; i++) {
+        const a = -Math.PI / 2 + rot * Math.PI / 180 + i * Math.PI / 5, r = (i % 2 ? R * 0.45 : R) * (0.94 + rnd() * 0.12);
+        d += `${i ? "L" : "M"}${(cx + Math.cos(a) * r + (rnd() - 0.5) * n).toFixed(1)},${(cy + Math.sin(a) * r + (rnd() - 0.5) * n).toFixed(1)} `;
+      }
+      return d + "Z";
+    };
+    const shape = pts(0);
+    return { shape, svg: `<path d="${shape}" fill="none" stroke="${color}" stroke-width="${width}" stroke-linejoin="round"/><path d="${pts(R * 0.06)}" fill="none" stroke="${color}" stroke-width="${width * 0.35}" stroke-linejoin="round"/>` };
+  }
+  // cute rounded skull w/ cross-hatching
+  function hatchSkull(id, cx, cy, w, fill, hatch, outline) {
+    const h = w * 0.72;
+    const head = `M${cx - w / 2},${cy} C${cx - w / 2},${cy - h * 0.7} ${cx + w / 2},${cy - h * 0.7} ${cx + w / 2},${cy} C${cx + w / 2},${cy + h * 0.45} ${cx + w * 0.25},${cy + h * 0.5} ${cx + w * 0.2},${cy + h * 0.62} L${cx - w * 0.2},${cy + h * 0.62} C${cx - w * 0.25},${cy + h * 0.5} ${cx - w / 2},${cy + h * 0.45} ${cx - w / 2},${cy} Z`;
+    let lines = "";
+    for (let k = -w; k < w; k += w / 9) lines += `<path d="M${cx + k},${cy - h} L${cx + k + h * 1.4},${cy + h}" stroke="${hatch}" stroke-width="${w / 40}"/><path d="M${cx + k},${cy + h} L${cx + k + h * 1.4},${cy - h}" stroke="${hatch}" stroke-width="${w / 60}"/>`;
+    return `<clipPath id="${id}"><path d="${head}"/></clipPath>
+      <path d="${head}" fill="${fill}" ${outline ? `stroke="${outline}" stroke-width="${w / 14}"` : ""}/>
+      <g clip-path="url(#${id})">${lines}</g>
+      <ellipse cx="${cx - w * 0.2}" cy="${cy + h * 0.05}" rx="${w * 0.14}" ry="${w * 0.12}" fill="${BLACK}"/>
+      <ellipse cx="${cx + w * 0.2}" cy="${cy + h * 0.05}" rx="${w * 0.14}" ry="${w * 0.12}" fill="${BLACK}"/>
+      <path d="M${cx},${cy + h * 0.25} l${-w * 0.04},${w * 0.08} h${w * 0.08} Z" fill="${BLACK}"/>`;
+  }
+  // splatter: a blob w/ a few flicks + loose drops
+  function splat(cx, cy, r, color, seed) {
+    const rnd = seeded(seed);
+    let d = "";
+    const n = 14;
+    for (let i = 0; i <= n; i++) {
+      const a = i / n * Math.PI * 2, rr = r * (0.6 + rnd() * 0.5) * (i % 3 === 0 ? 1.5 : 1);
+      d += `${i ? "L" : "M"}${(cx + Math.cos(a) * rr).toFixed(1)},${(cy + Math.sin(a) * rr).toFixed(1)} `;
+    }
+    let drops = "";
+    for (let i = 0; i < 9; i++) {
+      const a = rnd() * 6.28, dist = r * (1.4 + rnd() * 1.4);
+      drops += `<circle cx="${(cx + Math.cos(a) * dist).toFixed(1)}" cy="${(cy + Math.sin(a) * dist).toFixed(1)}" r="${(r * (0.06 + rnd() * 0.14)).toFixed(1)}" fill="${color}"/>`;
+    }
+    return `<path d="${d}Z" fill="${color}" stroke="${color}" stroke-width="${r * 0.25}" stroke-linejoin="round"/>${drops}`;
+  }
+
   // ---------- the designs ----------
   const DESIGNS = [
+    {
+      id: "neon-static",
+      name: "Neon Static",
+      blurb: "slanted scene blue stripes breaking into checkers + halftone, neon lightning, outlined stars + lil pink skulls. the full-front chaos tee from every 2008 mall.",
+      inks: [SCENE, NEON, BUBBLEGUM], tees: [BLACK, "#14142b"],
+      art: () => {
+        const rnd = seeded(21);
+        // big outline stars: their shapes also knock the stripes out
+        const stars = [
+          sketchStar(330, 640, 230, SCENE, 16, 1, -8), sketchStar(1170, 1180, 250, NEON, 16, 2, 12),
+          sketchStar(420, 1210, 190, SCENE, 14, 3, 20), sketchStar(1050, 1530, 170, SCENE, 14, 4, -15),
+        ];
+        // brushy stripes
+        let stripes = "";
+        for (let i = 0; i < 17; i++) {
+          const y = 380 + i * 52, x0 = 420 + rnd() * 120 - (i > 8 ? 120 : 0), x1 = 1120 + rnd() * 120;
+          const j = () => (rnd() * 10 - 5).toFixed(1);
+          stripes += `<path d="M${x0},${y + +j()} L${x1},${y + +j()} L${x1 + 12},${y + 15} L${x1},${y + 30 + +j()} L${x0 - 8},${y + 30 + +j()} L${x0 + 6},${y + 15} Z" fill="${SCENE}"/>`;
+        }
+        // bottom: dashes, checkers, halftone rows
+        let bits = "";
+        for (let r = 0; r < 3; r++) for (let x = 360; x < 1180; x += 70) if (rnd() > 0.25) bits += `<rect x="${x + (r % 2) * 35}" y="${1290 + r * 40}" width="${30 + rnd() * 20}" height="22" fill="${SCENE}"/>`;
+        for (let r = 0; r < 4; r++) for (let x = 340; x < 1200; x += 26) bits += `<circle cx="${x + (r % 2) * 13}" cy="${1430 + r * 30}" r="${Math.max(1.5, 7 - r * 1.6) * (0.6 + rnd() * 0.6)}" fill="${SCENE}"/>`;
+        for (let r = 0; r < 5; r++) for (let x = 1240; x < 1380; x += 22) bits += `<circle cx="${x}" cy="${560 + r * 26}" r="${5 - r * 0.7}" fill="${WHITE}"/>`;
+        const knock = `<mask id="star-knock" maskUnits="userSpaceOnUse" x="0" y="0" width="1500" height="1800"><rect width="1500" height="1800" fill="#fff"/>${stars.map(s => `<path d="${s.shape}" fill="#000" stroke="#000" stroke-width="40" stroke-linejoin="round"/>`).join("")}</mask>`;
+        const bolt = (x, y, s) => `<g transform="translate(${x} ${y}) scale(${s}) rotate(14)">
+          <path d="M0,0 L90,0 L45,230 L120,230 L-40,640 L10,330 L-60,330 Z" fill="none" stroke="${NEON}" stroke-width="12" stroke-linejoin="round"/>
+          <path d="M14,14 L76,14 L30,244 L102,244 L-26,580" fill="none" stroke="${NEON}" stroke-width="4"/></g>`;
+        let hatchBand = "";
+        for (let k = 0; k < 7; k++) hatchBand += `<path d="M${880 + k * 28},${880 - k * 6} L${1110 + k * 28},${940 - k * 6}" stroke="${NEON}" stroke-width="10" stroke-linecap="round"/>`;
+        return `
+        ${knock}
+        ${distressMask("worn-neon", 13, 0.9)}
+        <g mask="url(#worn-neon)">
+          ${splat(1180, 1180, 70, BUBBLEGUM, 3)}${splat(300, 900, 40, NEON, 8)}
+          <g mask="url(#star-knock)">${stripes}${bits}</g>
+          ${stars.map(s => s.svg).join("")}
+          ${bolt(700, 420, 1.15)}${bolt(870, 560, 0.95)}
+          ${hatchBand}
+          ${hatchSkull("sk-big", 980, 360, 230, BUBBLEGUM, WHITE, SCENE)}
+          ${hatchSkull("sk-a", 620, 860, 110, BUBBLEGUM, WHITE)}
+          ${hatchSkull("sk-b", 850, 1110, 120, BUBBLEGUM, WHITE)}
+          ${pixels(STAR, 250, 330, 14, { X: NEON })}${pixels(STAR, 1300, 820, 12, { X: NEON })}${pixels(SPARK, 200, 1000, 14, { X: NEON })}
+          ${pixels(STAR, 1290, 1480, 10, { X: SCENE })}${pixels(SPARK, 760, 1620, 12, { X: BUBBLEGUM })}
+          ${sketchStar(170, 470, 60, NEON, 8, 9, 5).svg}${sketchStar(1360, 1660, 55, NEON, 8, 10, -10).svg}
+        </g>`;
+      },
+    },
     {
       id: "swag-white",
       name: "#SWAG",
