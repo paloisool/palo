@@ -123,45 +123,14 @@
   // ---------- the designs ----------
   const DESIGNS = [
     {
-      id: "swag-cheetah-stars",
-      name: "#SWAG (Cheetah + Stars)",
-      blurb: "big stretched #SWAG in scene blue cheetah, dripping over nautical stars + halftone stripes, w/ a worn cracked print like ur fave 2008 tee.",
-      inks: [SCENE, SCENE_DARK, WHITE], tees: [BLACK, "#0d2b4d", WHITE],
-      art: () => {
-        let stripes = "";
-        for (let i = 0; i < 17; i++) {
-          const y = 330 + i * 70, x0 = 120 + ((i * 37) % 160);
-          stripes += `<rect x="${x0}" y="${y}" width="${1380 - x0}" height="${i % 3 === 1 ? 34 : 18}" fill="${i % 3 === 1 ? SCENE : WHITE}"/>`;
-          for (let k = 0; k < 7; k++) stripes += `<circle cx="${x0 - 22 - k * 26}" cy="${y + 9}" r="${Math.max(2, 13 - k * 2)}" fill="${WHITE}"/>`;
-        }
-        let grid = "";
-        for (let k = -6; k < 12; k++) grid += `<path d="M${200 + k * 120},1500 L${600 + k * 120},300" stroke="${WHITE}" stroke-width="3" opacity=".5"/>`;
-        const drips = [[260, 170], [420, 300], [560, 120], [760, 380], [930, 210], [1100, 290], [1250, 150]]
-          .map(([x, h]) => `<path d="M${x - 30},1230 L${x - 20},${1270 + h} A 20 20 0 0 0 ${x + 20},${1270 + h} L${x + 30},1230 Z" fill="${SCENE}"/>`).join("");
-        return `
-        ${leopardPattern("leo-swag1", SCENE, SCENE_MID, SCENE_DARK, 1.15, (1.15 / 1.75).toFixed(4))}
-        ${distressMask("worn-swag1", 5)}
-        <g mask="url(#worn-swag1)">
-          <g opacity=".9">${stripes}${grid}</g>
-          ${nauticalStar(1170, 420, 290, WHITE, SCENE_DARK, 14)}
-          ${nauticalStar(250, 1350, 230, WHITE, SCENE_DARK, -12)}
-          ${nauticalStar(1260, 1420, 150, WHITE, SCENE, 24)}
-          ${drips}
-          ${tallWord("#SWAG", 768, 1268, 540, 1.75, 1360, `fill="${WHITE}"`)}
-          ${tallWord("#SWAG", 750, 1250, 540, 1.75, 1360, `fill="url(#leo-swag1)" stroke="${BLACK}" stroke-width="14" paint-order="stroke"`)}
-        </g>`;
-      },
-    },
-    {
-      id: "swag-cheetah",
-      name: "#SWAG (Cheetah)",
-      blurb: "just a big stretched #SWAG in scene blue cheetah print w/ a cracked vintage finish. simple + loud, like the og.",
-      inks: [SCENE, SCENE_MID, SCENE_DARK], tees: [BLACK, WHITE],
+      id: "swag-white",
+      name: "#SWAG",
+      blurb: "big tall white #SWAG on a scene blue tee w/ a lil worn-in print texture. simple, loud, 2009.",
+      inks: [WHITE], tees: ["#1e9fd8", BLACK],
       art: () => `
-        ${leopardPattern("leo-swag2", SCENE, SCENE_MID, SCENE_DARK, 1.15, (1.15 / 1.75).toFixed(4))}
-        ${distressMask("worn-swag2", 9)}
-        <g mask="url(#worn-swag2)">
-          ${tallWord("#SWAG", 750, 1290, 540, 1.75, 1360, `fill="url(#leo-swag2)"`)}
+        ${distressMask("worn-swag", 9, 0.8)}
+        <g mask="url(#worn-swag)">
+          ${tallWord("#SWAG", 750, 1290, 540, 1.75, 1360, `fill="${WHITE}"`)}
         </g>`,
     },
     {
