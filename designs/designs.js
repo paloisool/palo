@@ -180,8 +180,59 @@
     <g fill="${BLACK}"><circle cx="${cx - s * 0.38}" cy="${cy + s * 0.05}" r="${s * 0.28}"/><circle cx="${cx + s * 0.38}" cy="${cy + s * 0.05}" r="${s * 0.28}"/>
     <rect x="${cx - s * 0.05}" y="${cy + s * 0.85}" width="${s * 0.1}" height="${s * 0.4}"/><rect x="${cx - s * 0.32}" y="${cy + s * 0.85}" width="${s * 0.08}" height="${s * 0.4}"/><rect x="${cx + s * 0.24}" y="${cy + s * 0.85}" width="${s * 0.08}" height="${s * 0.4}"/></g>`;
 
+  // zebra stripes: wavy, tapered black bands on white (tiles seamlessly)
+  function zebraPattern(id, base, ink, sx = 1, sy = 1) {
+    const T = 240, rnd = seeded(77);
+    let stripes = "";
+    for (let i = 0; i < 9; i++) {
+      const x = i * (T / 9) + rnd() * 6, w = 6 + rnd() * 12, sway = 10 + rnd() * 18;
+      const band = ox => `<path d="M${x + ox},0 C${x + ox + sway},${T * 0.3} ${x + ox - sway},${T * 0.65} ${x + ox},${T} L${x + ox + w},${T} C${x + ox + w - sway * 0.6},${T * 0.65} ${x + ox + w + sway * 0.6},${T * 0.3} ${x + ox + w},0 Z" fill="${ink}"/>`;
+      stripes += band(0) + band(-T);
+      if (rnd() > 0.5) { const y = rnd() * T; stripes += `<path d="M${x + w},${y} q20,10 34,30 q-18,-6 -34,-16 Z" fill="${ink}"/>`; }
+    }
+    return `<pattern id="${id}" width="${T}" height="${T}" patternUnits="userSpaceOnUse" patternTransform="scale(${sx} ${sy}) rotate(-18)"><rect width="${T}" height="${T}" fill="${base}"/>${stripes}</pattern>`;
+  }
+
   // ---------- the designs ----------
   const DESIGNS = [
+    {
+      id: "swag-scene",
+      name: "#SWAG / SCENE",
+      blurb: "#SWAG in leopard + SCENE in zebra, stacked over a hot pink spray-paint panel w/ star cutouts + long drips.",
+      inks: [PINK, TAN, TAN_MID, WHITE, BLACK], tees: [BLACK, "#2b2b2b"],
+      art: () => {
+        const rnd = seeded(53);
+        // spray panel w/ ragged edges + drips
+        let panel = `<rect x="170" y="330" width="1160" height="980" fill="${PINK}"/>`;
+        for (let i = 0; i < 260; i++) {
+          const edge = rnd() < 0.5 ? (rnd() < 0.5 ? 330 : 1310) : null;
+          const x = edge === null ? (rnd() < 0.5 ? 170 : 1330) + (rnd() - 0.5) * 70 : 170 + rnd() * 1160;
+          const y = edge === null ? 330 + rnd() * 980 : edge + (rnd() - 0.5) * 70;
+          panel += `<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${(2 + rnd() * 16).toFixed(1)}" fill="${PINK}"/>`;
+        }
+        for (let x = 200; x < 1320; x += 34 + rnd() * 40) {
+          const len = 30 + rnd() * rnd() * 420, w = 10 + rnd() * 26;
+          panel += `<path d="M${x - w / 2},1300 L${x - w / 3},${1310 + len} A${w / 3} ${w / 3} 0 0 0 ${x + w / 3},${1310 + len} L${x + w / 2},1300 Z" fill="${PINK}"/><circle cx="${x}" cy="${1313 + len}" r="${w / 2.4}" fill="${PINK}"/>`;
+        }
+        let holes = "";
+        [[260, 420, 60], [1230, 400, 70], [520, 1240, 50], [1090, 1250, 60], [760, 360, 40], [230, 980, 45], [1270, 900, 50], [880, 1500, 34], [400, 1560, 28]]
+          .forEach(([x, y, r], i) => { holes += `<path d="${starPath(x, y, r, i * 13)}" fill="#000"/>`; });
+        const st = 1.12;
+        return `
+        ${leopardPattern("leo-swagscene", TAN, TAN_MID, BLACK, 1.15, (1.15 / st).toFixed(4))}
+        ${zebraPattern("zebra-scene", WHITE, BLACK, 0.9, (0.9 / st).toFixed(4))}
+        <mask id="panel-stars" maskUnits="userSpaceOnUse" x="0" y="0" width="1500" height="1800"><rect width="1500" height="1800" fill="#fff"/>${holes}</mask>
+        ${distressMask("worn-swagscene", 37, 0.9)}
+        <g mask="url(#worn-swagscene)">
+          <g mask="url(#panel-stars)">${panel}</g>
+          ${tallWord("#SWAG", 764, 774, 470, st, 1240, `fill="${BLACK}"`)}
+          ${tallWord("#SWAG", 750, 760, 470, st, 1240, `fill="url(#leo-swagscene)" stroke="${BLACK}" stroke-width="16" paint-order="stroke"`)}
+          ${tallWord("SCENE", 764, 1284, 470, st, 1240, `fill="${BLACK}"`)}
+          ${tallWord("SCENE", 750, 1270, 470, st, 1240, `fill="url(#zebra-scene)" stroke="${BLACK}" stroke-width="16" paint-order="stroke"`)}
+          <path d="${starPath(1370, 250, 46, 10)}" fill="${PINK}"/><path d="${starPath(130, 1320, 36, -8)}" fill="${PINK}"/><path d="${starPath(1380, 1500, 30, 20)}" fill="${WHITE}"/>
+        </g>`;
+      },
+    },
     {
       id: "shutter-shades",
       name: "Shutter Shades",
