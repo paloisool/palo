@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 1800" width="1500" height="1800"><style>@import url('https://fonts.googleapis.com/css2?family=Metal+Mania&amp;family=Nosifer&amp;family=UnifrakturMaguntia&amp;family=Press+Start+2P&amp;family=Permanent+Marker&amp;family=Bungee+Shade&amp;display=swap');</style>
+        <text x="750" y="460" font-family="'Press Start 2P'" font-size="76" fill="#39ff14" text-anchor="middle" textLength="1100" lengthAdjust="spacingAndGlyphs" >NOW PLAYING:</text>
+        <rect x="230" y="580" width="1040" height="690" rx="40" fill="none" stroke="#ffffff" stroke-width="18"/>
+        <rect x="320" y="650" width="860" height="250" rx="16" fill="#ff2fa0"/>
+        <text x="750" y="770" font-family="'Permanent Marker'" font-size="76" fill="#0a0a0a" text-anchor="middle" textLength="760" lengthAdjust="spacingAndGlyphs" >my feelings (sad mix)</text>
+        <text x="420" y="860" font-family="'Press Start 2P'" font-size="30" fill="#0a0a0a" text-anchor="middle" >SIDE A</text><text x="1080" y="860" font-family="'Press Start 2P'" font-size="30" fill="#0a0a0a" text-anchor="middle" >C-90</text>
+        <rect x="460" y="940" width="580" height="140" rx="70" fill="none" stroke="#ffffff" stroke-width="12"/>
+        <g fill="none" stroke="#ffffff" stroke-width="12"><circle cx="560" cy="1010" r="52"/><circle cx="940" cy="1010" r="52"/></g>
+        <g stroke="#ffffff" stroke-width="10" stroke-linecap="round">
+          <path d="M560 965 V990 M560 1030 V1055 M515 1010 H540 M580 1010 H605 M940 965 V990 M940 1030 V1055 M895 1010 H920 M960 1010 H985"/></g>
+        <path d="M400 1270 L 450 1150 L 1050 1150 L 1100 1270" fill="none" stroke="#ffffff" stroke-width="14"/>
+        <g fill="#ffffff"><circle cx="290" cy="640" r="14"/><circle cx="1210" cy="640" r="14"/><circle cx="290" cy="1210" r="14"/><circle cx="1210" cy="1210" r="14"/></g>
+        <rect x="260" y="1380" width="980" height="40" fill="none" stroke="#39ff14" stroke-width="8"/>
+        <rect x="260" y="1380" width="600" height="40" fill="#39ff14"/>
+        <text x="750" y="1530" font-family="'Press Start 2P'" font-size="54" fill="#ffffff" text-anchor="middle" textLength="900" lengthAdjust="spacingAndGlyphs" >&#9654; 3:33 / forever</text></svg>

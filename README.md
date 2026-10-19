@@ -19,3 +19,9 @@ The shop name, bio, interests and so on are in `index.html`.
 ## Notes
 - The cart, comments and visitor counter are stored in each visitor's own browser (localStorage). Comments people post aren't seen by anyone else, and real orders reach you through the checkout email.
 - The demo designs are placeholders. Replace them with your real shirts.
+
+## Shirt designs (`designs/`)
+- `designs/index.html`: design sheet. Open it to see every design on shirt mockups and try different shirt colors.
+- `designs/print/*.png`: print-ready files, 4500 × 5400 px (15" × 18" at 300 dpi) with transparent backgrounds.
+- `designs/svg/*.svg`: vector versions. They load their fonts from Google Fonts, so open them in a browser, or convert text to outlines before using them in Illustrator or Inkscape.
+- `designs/designs.js`: where the designs are drawn. After editing it, run `node designs/render.js` (needs Playwright) to re-export the PNG and SVG files.

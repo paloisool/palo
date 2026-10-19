@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 1800" width="1500" height="1800"><style>@import url('https://fonts.googleapis.com/css2?family=Metal+Mania&amp;family=Nosifer&amp;family=UnifrakturMaguntia&amp;family=Press+Start+2P&amp;family=Permanent+Marker&amp;family=Bungee+Shade&amp;display=swap');</style>
+        <text x="750" y="460" font-family="'Nosifer'" font-size="190" fill="#ff2fa0" text-anchor="middle" textLength="1320" lengthAdjust="spacingAndGlyphs" >EYELINER</text>
+        <clipPath id="eye-clip"><path d="M380 860 Q 750 570 1120 860 Q 750 1090 380 860 Z"/></clipPath>
+        <path d="M380 860 Q 750 570 1120 860 Q 750 1090 380 860 Z" fill="#ffffff"/>
+        <g clip-path="url(#eye-clip)"><circle cx="750" cy="850" r="165" fill="#ff2fa0"/><circle cx="750" cy="850" r="78" fill="#0a0a0a"/><circle cx="795" cy="805" r="28" fill="#ffffff"/></g>
+        <path d="M360 870 Q 750 540 1130 840 L 1290 680 L 1110 890 Q 750 620 390 880 Z" fill="#0a0a0a"/>
+        <path d="M400 870 Q 750 1100 1110 870 Q 750 1060 400 870 Z" fill="#0a0a0a"/>
+        <g stroke="#0a0a0a" stroke-width="14" stroke-linecap="round">
+          <path d="M470 770 L430 690 M560 715 L535 625 M660 685 L650 590 M760 678 L770 580 M860 692 L885 600 M955 730 L995 650"/></g>
+        <path d="M610 1040 C 575 1100, 570 1140, 610 1150 C 650 1140, 645 1100, 610 1040 Z" fill="#ff2fa0"/>
+        <text x="750" y="1460" font-family="'Permanent Marker'" font-size="140" fill="#0a0a0a" text-anchor="middle" textLength="1280" lengthAdjust="spacingAndGlyphs" >is my personality</text></svg>

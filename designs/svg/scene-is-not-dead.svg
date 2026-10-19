@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 1800" width="1500" height="1800"><style>@import url('https://fonts.googleapis.com/css2?family=Metal+Mania&amp;family=Nosifer&amp;family=UnifrakturMaguntia&amp;family=Press+Start+2P&amp;family=Permanent+Marker&amp;family=Bungee+Shade&amp;display=swap');</style>
+        <path id="arc-scene" d="M 100 1000 A 650 650 0 0 1 1400 1000" fill="none"/>
+        <text font-family="'UnifrakturMaguntia'" font-size="200" fill="#ffffff" text-anchor="middle"><textPath href="#arc-scene" startOffset="50%">Scene Is</textPath></text>
+        <path d="M750 540 C 950 540, 1090 680, 1090 880 C 1090 1000, 1030 1080, 960 1120 L 960 1260 Q 960 1300 920 1300 L 580 1300 Q 540 1300 540 1260 L 540 1120 C 470 1080, 410 1000, 410 880 C 410 680, 550 540, 750 540 Z" fill="#ffffff"/>
+        <ellipse cx="870" cy="930" rx="85" ry="95" fill="#0a0a0a"/>
+        <ellipse cx="635" cy="935" rx="80" ry="90" fill="#0a0a0a"/>
+        <path d="M750 1010 L 712 1080 Q 750 1100 788 1080 Z" fill="#0a0a0a"/>
+        <g stroke="#0a0a0a" stroke-width="12"><path d="M600 1180 L900 1180"/>
+          <path d="M630 1150 L630 1300 M690 1150 L690 1300 M750 1150 L750 1300 M810 1150 L810 1300 M870 1150 L870 1300"/></g>
+        <path d="M395 960 C 350 650, 560 470, 790 478 C 990 486, 1120 620, 1104 830 C 1050 730, 960 672, 840 668 C 790 790, 660 900, 540 1030 C 480 1000, 420 990, 395 960 Z" fill="#ff2fa0"/>
+        <g fill="none" stroke="#0a0a0a" stroke-width="8" stroke-linecap="round" opacity=".6">
+          <path d="M520 560 C 600 640, 640 760, 600 900"/><path d="M640 520 C 720 600, 760 700, 720 820"/><path d="M800 500 C 900 560, 980 640, 1020 740"/></g>
+        <g fill="#39ff14" transform="rotate(18 1000 560)">
+          <path d="M1000 560 L 880 480 L 870 650 Z"/><path d="M1000 560 L 1120 480 L 1130 650 Z"/><circle cx="1000" cy="565" r="40"/></g>
+        <text x="750" y="1580" font-family="'UnifrakturMaguntia'" font-size="280" fill="#ff2fa0" text-anchor="middle" textLength="1050" lengthAdjust="spacingAndGlyphs" >Not Dead</text></svg>
