@@ -2,7 +2,7 @@
  * EDIT THE STUFF IN THIS FIRST SECTION to make the shop yours.
  */
 
-// where checkout orders get emailed to
+// where orders + custom requests get sent
 const SHOP_EMAIL = "your-email@example.com"; // <-- CHANGE THIS
 // optional: your paypal.me / venmo / cashapp link (leave "" to hide)
 const PAY_LINK = "";
@@ -11,64 +11,58 @@ const SHIPPING_FLAT = 5;         // $ per order
 const FREE_SHIPPING_OVER = 75;   // $ subtotal for free shipping
 const BUNDLE_MIN = 2;            // items needed for bundle discount
 const BUNDLE_DISCOUNT = 0.10;    // 10% off
+const BIG_SIZE_EXTRA = 4;        // $ added for 2XL + 3XL
+const MADE_IN = "5-10 biz days"; // how long u take to make an order
 
-/* YOUR MERCH ~ every item is one-of-a-kind.
+const SIZES = ["XS", "S", "M", "L", "XL", "2XL", "3XL"];
+
+/* YOUR DESIGNS ~ everything is made to order in any size.
  *  type:   "tee" | "hoodie" | "sweater"
- *  img:    path to a real photo (e.g. "images/tee1.jpg"). leave out to use a drawn placeholder.
+ *  print:  the words printed on the placeholder drawing
+ *  small:  tiny text under the graphic (lyric, year, whatever)
+ *  img:    path to a real photo/mockup (e.g. "images/cry-til-dawn.jpg"). leave out to use the drawn placeholder.
  *  color / ink: placeholder shirt color + print color
  *  motif:  placeholder graphic: skull | heart | broken | star | bat | dino | bolt | crown
- *  sold:   true to show it as SOLD
+ *  soldOut: true to stop taking orders for it
  *  top8:   true to put it in the Top 8
  */
 const PRODUCTS = [
-  { id: "me-01", name: "Midnight Eyeliner — 'Cry Til Dawn' Tour Tee", band: "Midnight Eyeliner", type: "tee",
-    size: "M", price: 38, was: 45, year: "2006", condition: "8/10 ~ light fade, cracked print (it's character)",
-    color: "#0d0d0d", ink: "#ff2fa0", motif: "broken", tag: "NEW", top8: true,
-    desc: "soft af black tee from the cry til dawn tour. back print lists all the dates. smells like a hot topic in 2006 (it doesn't, i washed it)." },
-  { id: "vc-02", name: "Velvet Coffin — Bat Logo Zip Hoodie", band: "Velvet Coffin", type: "hoodie",
-    size: "L", price: 64, year: "2004", condition: "9/10 ~ thumb holes intact!!",
-    color: "#1a1a1a", ink: "#9d00ff", motif: "bat", tag: "RARE", top8: true,
-    desc: "the holy grail. full zip, thumb holes, purple puff print bat on the front. barely worn." },
-  { id: "sh-03", name: "Sk8r Hearts — Checkered Heart Tee", band: "Sk8r Hearts", type: "tee",
-    size: "S", price: 30, year: "2007", condition: "9/10",
-    color: "#ff69b4", ink: "#0d0d0d", motif: "heart", top8: true,
-    desc: "hot pink baby tee w/ black checkered heart. fitted, cropped-ish. pair w/ a studded belt for full effect." },
-  { id: "wt-04", name: "The Wristband Theory — Skull Crewneck Sweater", band: "The Wristband Theory", type: "sweater",
-    size: "XL", price: 55, year: "2005", condition: "8/10 ~ tiny pill on left sleeve",
-    color: "#2b0d1f", ink: "#39ff14", motif: "skull", top8: true,
-    desc: "oversized maroon crewneck w/ lime skull. perfect for crying in a parking lot in october." },
-  { id: "rm-05", name: "Rawr Means Forever — Dino Tee", band: "Rawr Means Forever", type: "tee",
-    size: "M", price: 34, year: "2008", condition: "10/10 deadstock",
-    color: "#39ff14", ink: "#0d0d0d", motif: "dino", tag: "NEW", top8: true,
-    desc: "neon green tee w/ a dino that is saying rawr (i love u). deadstock, never worn, still has the fold lines." },
-  { id: "bl-06", name: "Black Lace Ballroom — Crown Pullover Hoodie", band: "Black Lace Ballroom", type: "hoodie",
-    size: "M", price: 58, year: "2006", condition: "8/10",
-    color: "#0d0d0d", ink: "#ffd700", motif: "crown", top8: true,
-    desc: "black pullover with gold crown + band name across the chest. kangaroo pocket for ur ipod nano." },
-  { id: "sv-07", name: "Static Valentine — Lightning Tee", band: "Static Valentine", type: "tee",
-    size: "L", price: 32, year: "2005", condition: "7/10 ~ some fading, priced accordingly",
-    color: "#00b7d9", ink: "#ffffff", motif: "bolt", top8: true,
-    desc: "faded cyan tee w/ lightning bolt. very warped tour core." },
-  { id: "nm-08", name: "Neon Mascara — Star Sweater", band: "Neon Mascara", type: "sweater",
-    size: "M", price: 48, year: "2007", condition: "9/10",
-    color: "#111111", ink: "#ff2fa0", motif: "star", top8: true,
-    desc: "black knit-feel crewneck, pink star. the sleeves are long enough to hide ur hands in." },
-  { id: "gg-09", name: "Glitter & Gloom — Broken Heart Tee", band: "Glitter & Gloom", type: "tee",
-    size: "XS", price: 28, year: "2009", condition: "9/10",
-    color: "#ffffff", ink: "#ff0080", motif: "broken", sold: true,
-    desc: "white baby tee, hot pink broken heart. sorry babe it's gone :'(" },
-  { id: "pm-10", name: "Panic at the Mall — Skull Zip Hoodie", band: "Panic at the Mall", type: "hoodie",
-    size: "S", price: 60, year: "2006", condition: "8/10",
-    color: "#ff2fa0", ink: "#0d0d0d", motif: "skull",
-    desc: "pink zip hoodie w/ black skull. the most scene thing i own. i'm sad to see it go fr." },
-  { id: "hf-11", name: "Hearts on Fire Escape — Bat Tee", band: "Hearts on Fire Escape", type: "tee",
-    size: "XL", price: 33, year: "2004", condition: "8/10",
-    color: "#3d0066", ink: "#00e5ff", motif: "bat",
-    desc: "purple tee, cyan bat. huge on the back too. fits like a dress on some ppl." },
-  { id: "pk-12", name: "Paramour Kids — Star Longsleeve Sweater", band: "Paramour Kids", type: "sweater",
-    size: "L", price: 46, year: "2008", condition: "9/10",
-    color: "#0d0d0d", ink: "#ffffff", motif: "star", sold: true,
-    desc: "black + white star crewneck. sold to a fellow emo kid ♥" },
+  { id: "cry-til-dawn", name: "'Cry Til Dawn' Tee", print: "Cry Til Dawn", small: "est. 2005", type: "tee",
+    price: 30, was: 35, color: "#0d0d0d", ink: "#ff2fa0", motif: "broken", tag: "NEW", top8: true,
+    desc: "my fave design ever. hot pink broken heart on a soft black tee. made for crying in the car w/ the windows down." },
+  { id: "velvet-coffin", name: "'Velvet Coffin' Bat Zip Hoodie", print: "Velvet Coffin", small: "night owls only", type: "hoodie",
+    price: 58, color: "#1a1a1a", ink: "#9d00ff", motif: "bat", tag: "HOT", top8: true,
+    desc: "full zip w/ thumb holes + a purple puff-print bat. the coziest way 2 be dramatic." },
+  { id: "sk8r-hearts", name: "'Sk8r Hearts' Checkered Heart Tee", print: "Sk8r Hearts", small: "kickflip ur heart", type: "tee",
+    price: 28, color: "#ff69b4", ink: "#0d0d0d", motif: "heart", top8: true,
+    desc: "hot pink tee w/ a black checkered heart. comes in a fitted baby-tee cut on request (just say so at checkout)." },
+  { id: "wristband-theory", name: "'Wristband Theory' Skull Sweater", print: "The Wristband Theory", small: "tour 4 ever", type: "sweater",
+    price: 50, color: "#2b0d1f", ink: "#39ff14", motif: "skull", top8: true,
+    desc: "maroon crewneck w/ a lime skull. oversized fit, sleeves long enough 2 hide ur hands in." },
+  { id: "rawr-forever", name: "'Rawr Means Forever' Dino Tee", print: "Rawr Means Forever", small: "i luv u (in dinosaur)", type: "tee",
+    price: 30, color: "#39ff14", ink: "#0d0d0d", motif: "dino", tag: "NEW", top8: true,
+    desc: "neon green tee w/ a lil dino saying rawr. which means i love u. obviously." },
+  { id: "black-lace", name: "'Black Lace Ballroom' Crown Pullover", print: "Black Lace Ballroom", small: "royalty of sadness", type: "hoodie",
+    price: 55, color: "#0d0d0d", ink: "#ffd700", motif: "crown", top8: true,
+    desc: "black pullover w/ a gold crown across the chest. kangaroo pocket 4 ur ipod nano." },
+  { id: "static-valentine", name: "'Static Valentine' Lightning Tee", print: "Static Valentine", small: "zap ur heart", type: "tee",
+    price: 28, color: "#00b7d9", ink: "#ffffff", motif: "bolt", top8: true,
+    desc: "cyan tee w/ a white lightning bolt. gives warped tour parking lot energy." },
+  { id: "neon-mascara", name: "'Neon Mascara' Star Sweater", print: "Neon Mascara", small: "glow in the dark (not really)", type: "sweater",
+    price: 48, color: "#111111", ink: "#ff2fa0", motif: "star", top8: true,
+    desc: "black crewneck w/ a pink star. soft inside, scene on the outside." },
+  { id: "glitter-gloom", name: "'Glitter & Gloom' Broken Heart Tee", print: "Glitter & Gloom", small: "sparkle sadly", type: "tee",
+    price: 28, color: "#ffffff", ink: "#ff0080", motif: "broken",
+    desc: "white tee, hot pink broken heart. for the sad but make it sparkly ppl." },
+  { id: "panic-mall", name: "'Panic at the Mall' Skull Zip Hoodie", print: "Panic at the Mall", small: "food court forever", type: "hoodie",
+    price: 58, color: "#ff2fa0", ink: "#0d0d0d", motif: "skull", tag: "HOT",
+    desc: "pink zip hoodie w/ a black skull. the most scene thing i've ever made." },
+  { id: "fire-escape", name: "'Hearts on Fire Escape' Bat Tee", print: "Hearts on Fire Escape", small: "climb out ur window", type: "tee",
+    price: 30, color: "#3d0066", ink: "#00e5ff", motif: "bat",
+    desc: "purple tee w/ a cyan bat. extra big back print too." },
+  { id: "paramour-kids", name: "'Paramour Kids' Star Sweater", print: "Paramour Kids", small: "misery loves company", type: "sweater",
+    price: 46, color: "#0d0d0d", ink: "#ffffff", motif: "star", soldOut: true,
+    desc: "black + white star crewneck. taking a break from this one, back soon!!" },
 ];
 
 /* ---------- (u don't need to edit below here unless u want to) ---------- */
@@ -77,6 +71,8 @@ const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 const money = n => "$" + n.toFixed(2);
 const byId = id => PRODUCTS.find(p => p.id === id);
+const sizePrice = (p, size) => p.price + (size === "2XL" || size === "3XL" ? BIG_SIZE_EXTRA : 0);
+const sizeOptions = (sel = "M") => SIZES.map(s => `<option${s === sel ? " selected" : ""}>${s}</option>`).join("");
 const store = {
   get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } },
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
@@ -128,9 +124,9 @@ function garmentSVG(p) {
         <path d="M84 27 Q100 40 116 27" fill="none" stroke="${shade}" stroke-width="4"/>`;
     }
   }
-  const words = p.band.split(" ");
+  const words = p.print.split(" ");
   const half = Math.ceil(words.length / 2);
-  const l1 = words.length > 2 ? words.slice(0, half).join(" ") : p.band;
+  const l1 = words.length > 2 ? words.slice(0, half).join(" ") : p.print;
   const l2 = words.length > 2 ? words.slice(half).join(" ") : "";
   const textTop = p.type === "hoodie" ? 80 : 66;
   const motifY = p.type === "hoodie" ? 12 : 4;
@@ -141,18 +137,18 @@ function garmentSVG(p) {
       ${l2 ? `<text x="100" y="${textTop + 6}" font-size="${l2.length > 14 ? 11 : 14}">${l2}</text>` : ""}
     </g>
     <g transform="translate(0 ${motifY}) translate(100 110) scale(.82) translate(-100 -110)">${MOTIFS[p.motif](ink)}</g>
-    <text x="100" y="${p.type === "hoodie" ? 142 : 166}" font-family="monospace" font-size="7" fill="${ink}" text-anchor="middle" opacity=".85">~ ${p.year} ~</text>
+    <text x="100" y="${p.type === "hoodie" ? 142 : 166}" font-family="monospace" font-size="7" fill="${ink}" text-anchor="middle" opacity=".85">~ ${p.small} ~</text>
   </svg>`;
 }
 
 /* ---------- top 8 ---------- */
 function renderTop8() {
-  const items = PRODUCTS.filter(p => p.top8 && !p.sold).slice(0, 8);
+  const items = PRODUCTS.filter(p => p.top8 && !p.soldOut).slice(0, 8);
   $(".top8-count .hot").textContent = items.length;
   $("#top8-grid").innerHTML = items.map(p => `
     <button type="button" class="friend" data-view="${p.id}">
       <div class="thumb">${garmentSVG(p)}</div>
-      <b>${p.band}</b>
+      <b>${p.print}</b>
     </button>`).join("");
 }
 
@@ -165,22 +161,21 @@ function renderShop() {
   if (filter !== "all") items = items.filter(p => p.type === filter);
   if (sort === "low") items.sort((a, b) => a.price - b.price);
   else if (sort === "high") items.sort((a, b) => b.price - a.price);
-  // sold stuff sinks to the bottom
-  items.sort((a, b) => (a.sold ? 1 : 0) - (b.sold ? 1 : 0));
+  // sold out stuff sinks to the bottom
+  items.sort((a, b) => (a.soldOut ? 1 : 0) - (b.soldOut ? 1 : 0));
 
-  const cart = getCart();
   $("#shop-grid").innerHTML = items.map(p => {
-    const inCart = cart.includes(p.id);
-    const tag = p.sold ? `<span class="tag sold">SOLD</span>`
-      : p.tag ? `<span class="tag ${p.tag === "RARE" ? "rare" : ""}">${p.tag}</span>` : "";
-    return `<article class="card ${p.sold ? "is-sold" : ""}">
+    const tag = p.soldOut ? `<span class="tag sold">SOLD OUT</span>`
+      : p.tag ? `<span class="tag ${p.tag === "HOT" ? "rare" : ""}">${p.tag}</span>` : "";
+    return `<article class="card ${p.soldOut ? "is-sold" : ""}">
       ${tag}
       <button type="button" class="img" data-view="${p.id}" aria-label="view ${p.name}">${garmentSVG(p)}</button>
       <h4>${p.name}</h4>
-      <div class="meta">${p.type} · size ${p.size} · ${p.year}</div>
+      <div class="meta">${p.type} · made 2 order</div>
       <div class="price">${money(p.price)}${p.was ? `<s>${money(p.was)}</s>` : ""}</div>
-      <button type="button" class="btn-glitter" data-add="${p.id}" ${p.sold || inCart ? "disabled" : ""}>
-        ${p.sold ? "sold out :'(" : inCart ? "in cart ♥" : "add 2 cart"}
+      ${p.soldOut ? "" : `<label class="size-pick">size: <select id="size-${p.id}" data-size-for="${p.id}">${sizeOptions()}</select></label>`}
+      <button type="button" class="btn-glitter" data-add="${p.id}" ${p.soldOut ? "disabled" : ""}>
+        ${p.soldOut ? "sold out :'(" : "add 2 cart"}
       </button>
     </article>`;
   }).join("") || `<p class="cart-empty">nothing here yet... check back soon xD</p>`;
@@ -190,8 +185,7 @@ function renderShop() {
 function openModal(id) {
   const p = byId(id);
   if (!p) return;
-  const inCart = getCart().includes(p.id);
-  $("#modal-title").textContent = p.band.toLowerCase().replace(/\s+/g, "_") + ".exe";
+  $("#modal-title").textContent = p.id.replace(/-/g, "_") + ".exe";
   $("#modal-body").innerHTML = `
     <div class="m-img">${garmentSVG(p)}</div>
     <div>
@@ -200,13 +194,16 @@ function openModal(id) {
       <p class="m-desc">${p.desc}</p>
       <dl>
         <dt>type:</dt><dd>${p.type}</dd>
-        <dt>size:</dt><dd>${p.size}</dd>
-        <dt>era:</dt><dd>${p.year}</dd>
-        <dt>condition:</dt><dd>${p.condition}</dd>
-        <dt>qty:</dt><dd>1 (one of a kind!!)</dd>
+        <dt>sizes:</dt><dd>XS–3XL (2XL + 3XL are +${money(BIG_SIZE_EXTRA)})</dd>
+        <dt>made in:</dt><dd>${MADE_IN}, then it ships</dd>
+        <dt>design:</dt><dd>original, drawn by me ♥</dd>
       </dl>
-      <button type="button" class="btn-glitter" data-add="${p.id}" ${p.sold || inCart ? "disabled" : ""}>
-        ${p.sold ? "sold out :'(" : inCart ? "already in ur cart ♥" : "add 2 cart ♥"}
+      ${p.soldOut ? "" : `<div class="pickers">
+        <label class="size-pick">size: <select id="m-size" data-size-for="${p.id}">${sizeOptions()}</select></label>
+        <label class="qty-pick">qty: <input type="number" id="m-qty" min="1" max="20" value="1"></label>
+      </div>`}
+      <button type="button" class="btn-glitter" data-add="${p.id}" data-from-modal ${p.soldOut ? "disabled" : ""}>
+        ${p.soldOut ? "sold out :'(" : "add 2 cart ♥"}
       </button>
     </div>`;
   $("#modal").hidden = false;
@@ -215,45 +212,65 @@ function openModal(id) {
 function closeModal() { $("#modal").hidden = true; }
 
 /* ---------- cart ---------- */
-function getCart() { return store.get("rawr-cart", []).filter(id => byId(id) && !byId(id).sold); }
-function setCart(c) { store.set("rawr-cart", c); updateCart(); renderShop(); }
-
-function addToCart(id) {
-  const c = getCart();
-  if (c.includes(id)) return toast("already in ur cart silly ♥");
-  c.push(id);
-  setCart(c);
-  toast("added 2 cart!! rawr xD");
-  if (!$("#modal").hidden) openModal(id);
+// cart = [{ id, size, qty }]
+function getCart() {
+  return store.get("rawr-cart-v2", []).filter(l => byId(l.id) && !byId(l.id).soldOut && SIZES.includes(l.size) && l.qty > 0);
 }
-function removeFromCart(id) { setCart(getCart().filter(x => x !== id)); }
+function setCart(c) { store.set("rawr-cart-v2", c); updateCart(); }
+
+function addToCart(id, fromModal) {
+  const sizeEl = fromModal ? $("#m-size") : $(`#size-${id}`);
+  const size = sizeEl ? sizeEl.value : "M";
+  const qty = fromModal ? Math.max(1, Math.min(20, parseInt($("#m-qty").value, 10) || 1)) : 1;
+  const c = getCart();
+  const line = c.find(l => l.id === id && l.size === size);
+  if (line) line.qty = Math.min(20, line.qty + qty);
+  else c.push({ id, size, qty });
+  setCart(c);
+  toast(`added ${qty > 1 ? qty + "x " : ""}size ${size} 2 cart!! rawr xD`);
+  if (fromModal) closeModal();
+}
+function changeQty(i, d) {
+  const c = getCart();
+  if (!c[i]) return;
+  c[i].qty += d;
+  if (c[i].qty <= 0) c.splice(i, 1);
+  else c[i].qty = Math.min(20, c[i].qty);
+  setCart(c);
+}
 
 function totals() {
-  const items = getCart().map(byId);
-  const subtotal = items.reduce((s, p) => s + p.price, 0);
-  const discount = items.length >= BUNDLE_MIN ? subtotal * BUNDLE_DISCOUNT : 0;
+  const lines = getCart().map(l => ({ ...l, p: byId(l.id), each: sizePrice(byId(l.id), l.size) }));
+  const count = lines.reduce((s, l) => s + l.qty, 0);
+  const subtotal = lines.reduce((s, l) => s + l.each * l.qty, 0);
+  const discount = count >= BUNDLE_MIN ? subtotal * BUNDLE_DISCOUNT : 0;
   const after = subtotal - discount;
-  const shipping = items.length === 0 || after >= FREE_SHIPPING_OVER ? 0 : SHIPPING_FLAT;
-  return { items, subtotal, discount, shipping, total: after + shipping };
+  const shipping = count === 0 || after >= FREE_SHIPPING_OVER ? 0 : SHIPPING_FLAT;
+  return { lines, count, subtotal, discount, shipping, total: after + shipping };
 }
 
 function updateCart() {
   const t = totals();
-  $$(".cart-count").forEach(el => (el.textContent = t.items.length));
-  $("#cart-items").innerHTML = t.items.length
-    ? t.items.map(p => `<div class="cart-item">
-        <div class="ci-img">${garmentSVG(p)}</div>
-        <div><div class="ci-name">${p.name}</div><div class="ci-meta">size ${p.size} · ${p.type}</div>
-          <button type="button" class="ci-remove" data-remove="${p.id}">✖ remove</button></div>
-        <div class="ci-price">${money(p.price)}</div>
+  $$(".cart-count").forEach(el => (el.textContent = t.count));
+  $("#cart-items").innerHTML = t.lines.length
+    ? t.lines.map((l, i) => `<div class="cart-item">
+        <div class="ci-img">${garmentSVG(l.p)}</div>
+        <div><div class="ci-name">${l.p.name}</div><div class="ci-meta">size ${l.size} · ${money(l.each)} each</div>
+          <div class="ci-qty">
+            <button type="button" data-qty="${i}" data-d="-1" aria-label="one less">−</button>
+            <span>${l.qty}</span>
+            <button type="button" data-qty="${i}" data-d="1" aria-label="one more">+</button>
+            <button type="button" class="ci-remove" data-qty="${i}" data-d="-999">✖ remove</button>
+          </div></div>
+        <div class="ci-price">${money(l.each * l.qty)}</div>
       </div>`).join("")
     : `<p class="cart-empty">ur cart is empty...<br>just like my heart :'(</p>`;
   $("#cart-subtotal").textContent = money(t.subtotal);
   $("#discount-line").hidden = !t.discount;
   $("#cart-discount").textContent = "-" + money(t.discount);
-  $("#cart-shipping").textContent = t.items.length && !t.shipping ? "FREE ♥" : money(t.shipping);
+  $("#cart-shipping").textContent = t.count && !t.shipping ? "FREE ♥" : money(t.shipping);
   $("#cart-total").textContent = money(t.total);
-  $("#checkout").disabled = !t.items.length;
+  $("#checkout").disabled = !t.count;
 }
 
 function openCart() {
@@ -268,12 +285,43 @@ function closeCart() {
   $("#cart-overlay").hidden = true;
 }
 
+// shows a message + copy button (email links don't open for everyone)
+function showSendWindow(title, heading, intro, subject, body) {
+  const mailto = `mailto:${SHOP_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  closeCart();
+  $("#modal-title").textContent = title;
+  $("#modal-body").innerHTML = `
+    <div class="checkout-box">
+      <h3></h3>
+      <p class="m-desc"><span class="intro"></span> send it to <b class="select-me" id="shop-email"></b> and i'll get back 2 u asap ♥</p>
+      <textarea id="order-text" class="order-text" rows="12" readonly></textarea>
+      <div class="checkout-actions">
+        <button type="button" class="btn-glitter" id="copy-order">copy it</button>
+        <a class="btn-glitter" id="mail-order" href="#">open email app</a>
+        ${PAY_LINK ? `<a class="btn-glitter" href="${PAY_LINK}" target="_blank" rel="noopener">pay link</a>` : ""}
+      </div>
+    </div>`;
+  $(".checkout-box h3").textContent = heading;
+  $(".checkout-box .intro").textContent = intro;
+  $("#shop-email").textContent = SHOP_EMAIL;
+  $("#order-text").value = `${subject}\n\n${body}`;
+  $("#mail-order").href = mailto;
+  $("#copy-order").addEventListener("click", () => {
+    const ta = $("#order-text");
+    navigator.clipboard.writeText(ta.value)
+      .then(() => toast("copied!! paste it in an email or DM ♥"))
+      .catch(() => { ta.focus(); ta.select(); toast("select all + copy it ♥"); });
+  });
+  $("#modal").hidden = false;
+  $("#modal-close").focus();
+}
+
 function checkout() {
   const t = totals();
-  if (!t.items.length) return;
-  const lines = t.items.map(p => `- ${p.name} (size ${p.size}) [${p.id}] ... ${money(p.price)}`);
+  if (!t.count) return;
+  const lines = t.lines.map(l => `- ${l.qty}x ${l.p.name} (size ${l.size}) ... ${money(l.each * l.qty)}`);
   const body = [
-    "heyyy!! i wanna buy:",
+    "heyyy!! i wanna order:",
     "",
     ...lines,
     "",
@@ -285,42 +333,41 @@ function checkout() {
     "my name:",
     "shipping address:",
     "how i'll pay (paypal / venmo / cashapp):",
+    "anything else (fit, notes):",
     "",
     "thx!! xoxo",
   ].filter(l => l !== null).join("\n");
-  const subject = `RaWr ThReAdZ order (${t.items.length} item${t.items.length > 1 ? "s" : ""}) - ${money(t.total)}`;
-  const mailto = `mailto:${SHOP_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  closeCart();
-  $("#modal-title").textContent = "checkout.exe";
-  $("#modal-body").innerHTML = `
-    <div class="checkout-box">
-      <h3>almost done!! ♥</h3>
-      <p class="m-desc">send this order to <b class="select-me" id="shop-email"></b> and i'll reply w/ payment + shipping info. fill in ur name + address at the bottom first.</p>
-      <textarea id="order-text" class="order-text" rows="12" readonly></textarea>
-      <div class="checkout-actions">
-        <button type="button" class="btn-glitter" id="copy-order">copy order</button>
-        <a class="btn-glitter" id="mail-order" href="#">open email app</a>
-        ${PAY_LINK ? `<a class="btn-glitter" href="${PAY_LINK}" target="_blank" rel="noopener">pay link</a>` : ""}
-      </div>
-    </div>`;
-  $("#shop-email").textContent = SHOP_EMAIL;
-  $("#order-text").value = `${subject}\n\n${body}`;
-  $("#mail-order").href = mailto;
-  $("#copy-order").addEventListener("click", () => {
-    const ta = $("#order-text");
-    navigator.clipboard.writeText(ta.value)
-      .then(() => toast("order copied!! paste it in an email ♥"))
-      .catch(() => { ta.focus(); ta.select(); toast("select all + copy it ♥"); });
-  });
-  $("#modal").hidden = false;
-  $("#modal-close").focus();
+  const subject = `RaWr ThReAdZ order (${t.count} item${t.count > 1 ? "s" : ""}) - ${money(t.total)}`;
+  showSendWindow("checkout.exe", "almost done!! ♥", "fill in ur name + address at the bottom, then", subject, body);
+}
+
+function customRequest(e) {
+  e.preventDefault();
+  const v = id => $(id).value.trim();
+  const typeLabel = $("#cu-type").selectedOptions[0].textContent;
+  const body = [
+    "heyyy!! i want a custom piece:",
+    "",
+    `name: ${v("#cu-name")}`,
+    `reach me at: ${v("#cu-contact")}`,
+    `item: ${typeLabel}`,
+    `size: ${v("#cu-size")}`,
+    `how many: ${v("#cu-qty") || 1}`,
+    `colors: ${v("#cu-colors") || "surprise me"}`,
+    "",
+    "my idea:",
+    v("#cu-idea"),
+    "",
+    "thx!! xoxo",
+  ].join("\n");
+  showSendWindow("custom_order.exe", "ur idea is ready 2 send!! ♥", "i'll reply w/ a mockup + price.", `RaWr ThReAdZ custom request - ${typeLabel}`, body);
 }
 
 /* ---------- comments ---------- */
 const SEED_COMMENTS = [
-  { name: "xXsk8rboiXx", av: "🛹", text: "omg the velvet coffin hoodie?!?! i've been looking 4 that since 2005. thx 4 the add!! pc4pc?", when: "Oct 3 2026 11:47 PM" },
+  { name: "xXsk8rboiXx", av: "🛹", text: "omg the velvet coffin hoodie?!?! i NEED it. thx 4 the add!! pc4pc?", when: "Oct 3 2026 11:47 PM" },
   { name: "~*sCeNe QuEeN*~", av: "👑", text: "got my order today and it came w/ STICKERS and a lil note ♥♥♥ 10/10 would rawr again", when: "Sep 28 2026 3:12 AM" },
-  { name: "brokenmascara89", av: "🖤", text: "ur page layout is giving me flashbacks in the best way. bought 2 tees, the bundle discount is clutch", when: "Sep 21 2026 9:09 PM" },
+  { name: "brokenmascara89", av: "🖤", text: "ur page layout is giving me flashbacks in the best way. ordered 2 tees, the bundle discount is clutch", when: "Sep 21 2026 9:09 PM" },
 ];
 
 function renderComments() {
@@ -420,11 +467,11 @@ function toast(msg) {
 
 /* ---------- wire it all up ---------- */
 document.addEventListener("click", e => {
-  const t = e.target.closest("[data-add],[data-view],[data-remove],[data-open-cart],[data-filter]");
+  const t = e.target.closest("[data-add],[data-view],[data-qty],[data-open-cart],[data-filter]");
   if (!t) return;
-  if (t.dataset.add) addToCart(t.dataset.add);
+  if (t.dataset.add) addToCart(t.dataset.add, "fromModal" in t.dataset);
   else if (t.dataset.view) openModal(t.dataset.view);
-  else if (t.dataset.remove) removeFromCart(t.dataset.remove);
+  else if (t.dataset.qty) changeQty(+t.dataset.qty, +t.dataset.d);
   else if ("openCart" in t.dataset) { e.preventDefault(); closeModal(); openCart(); }
   else if (t.dataset.filter) {
     filter = t.dataset.filter;
@@ -441,6 +488,7 @@ $("#modal-close").addEventListener("click", closeModal);
 $("#modal").addEventListener("click", e => { if (e.target.id === "modal") closeModal(); });
 document.addEventListener("keydown", e => { if (e.key === "Escape") { closeModal(); closeCart(); } });
 $("#comment-form").addEventListener("submit", postComment);
+$("#custom-form").addEventListener("submit", customRequest);
 $("#add-friend").addEventListener("click", e => { e.preventDefault(); toast("friend request sent!! ♥ (u r now in my top 8 of luv)"); });
 $("#msg-link").addEventListener("click", e => { e.preventDefault(); window.location.href = `mailto:${SHOP_EMAIL}?subject=${encodeURIComponent("hiii from ur shop page")}`; });
 $("#prev-song").addEventListener("click", () => setSong(songIdx - 1));

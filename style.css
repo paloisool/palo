@@ -557,3 +557,28 @@ a:hover { color: var(--lime); text-decoration: underline wavy; }
 .checkout-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
 .checkout-actions .btn-glitter { width: auto; margin: 0; text-decoration: none; display: inline-block; }
 .checkout-actions a.btn-glitter:hover { color: #fff; text-decoration: none; }
+
+/* custom orders */
+.custom-intro { margin: 0 0 4px; }
+.price-inline { color: var(--lime); }
+.custom-form { margin-top: 4px; }
+.form-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.form-row label { flex: 1 1 140px; min-width: 0; }
+.comment-form select {
+  font-family: inherit; font-size: 13px;
+  background: #000; color: var(--lime); border: 1px solid var(--pink); padding: 6px;
+}
+.size-pick { display: flex; align-items: center; gap: 6px; font-size: 11px; }
+.size-pick select, .qty-pick input {
+  background: #000; color: var(--lime); border: 1px solid var(--pink); font-family: inherit; padding: 3px;
+}
+.modal-body .size-pick select, .modal-body .qty-pick input { font-size: 13px; }
+.modal-body .pickers { display: flex; flex-wrap: wrap; gap: 12px; margin: 8px 0; font-size: 12px; }
+.qty-pick { display: flex; align-items: center; gap: 6px; }
+.qty-pick input { width: 56px; }
+.ci-qty { display: flex; align-items: center; gap: 4px; margin-top: 4px; font-size: 11px; }
+.ci-qty button {
+  background: #000; color: var(--pink); border: 1px solid var(--pink); cursor: pointer;
+  width: 22px; height: 22px; padding: 0; font-family: inherit;
+}
+.ci-qty .ci-remove { width: auto; height: auto; border: none; background: none; color: #ff5a5a; margin: 0 0 0 8px; }
