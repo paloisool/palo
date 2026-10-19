@@ -5,9 +5,10 @@
  */
 (function () {
   const PINK = "#ff2fa0", LIME = "#39ff14", CYAN = "#00e5ff", WHITE = "#ffffff",
-        BLACK = "#0a0a0a", LAV = "#b388ff";
+        BLACK = "#0a0a0a", LAV = "#b388ff",
+        SCENE = "#1ab0ff", SCENE_MID = "#0a7fe0", SCENE_DARK = "#003c8f";
 
-  const FONTS = "https://fonts.googleapis.com/css2?family=Metal+Mania&family=Nosifer&family=UnifrakturMaguntia&family=Press+Start+2P&family=Permanent+Marker&family=Bungee+Shade&display=swap";
+  const FONTS = "https://fonts.googleapis.com/css2?family=Anton&family=Metal+Mania&family=Nosifer&family=UnifrakturMaguntia&family=Press+Start+2P&family=Permanent+Marker&family=Bungee+Shade&display=swap";
 
   // ---------- helpers ----------
   function pixels(grid, x, y, size, colors) {
@@ -48,8 +49,92 @@
   const text = (str, x, y, font, size, fill, len, extra = "") =>
     `<text x="${x}" y="${y}" font-family="${font}" font-size="${size}" fill="${fill}" text-anchor="middle"${len ? ` textLength="${len}" lengthAdjust="spacingAndGlyphs"` : ""} ${extra}>${str}</text>`;
 
+  // leopard / cheetah print tile (seeded so it's the same every render)
+  function leopardPattern(id, base, mid, dark, sx = 1, sy = 1) {
+    let seed = 7;
+    const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    let spots = "";
+    const centers = [[40, 40], [140, 30], [95, 105], [25, 160], [165, 150], [200, 80], [0, 80], [100, 200], [100, 0]];
+    centers.forEach(([cx, cy]) => {
+      spots += `<ellipse cx="${cx}" cy="${cy}" rx="${16 + rnd() * 6}" ry="${13 + rnd() * 5}" fill="${mid}"/>`;
+      const n = 4 + Math.floor(rnd() * 2);
+      for (let k = 0; k < n; k++) {
+        const a = (k / n) * Math.PI * 2 + rnd() * 0.6, r = 26 + rnd() * 5;
+        spots += `<ellipse cx="${(cx + Math.cos(a) * r).toFixed(1)}" cy="${(cy + Math.sin(a) * r).toFixed(1)}" rx="${10 + rnd() * 5}" ry="${6 + rnd() * 3}" transform="rotate(${(a * 180 / Math.PI + 90).toFixed(0)} ${(cx + Math.cos(a) * r).toFixed(1)} ${(cy + Math.sin(a) * r).toFixed(1)})" fill="${dark}"/>`;
+      }
+    });
+    for (let k = 0; k < 10; k++) spots += `<circle cx="${(rnd() * 200).toFixed(0)}" cy="${(rnd() * 200).toFixed(0)}" r="${4 + rnd() * 4}" fill="${dark}"/>`;
+    return `<pattern id="${id}" width="200" height="200" patternUnits="userSpaceOnUse" patternTransform="scale(${sx} ${sy})"><rect width="200" height="200" fill="${base}"/>${spots}</pattern>`;
+  }
+  // nautical star: each point split into a light + dark half
+  function nauticalStar(cx, cy, R, light, dark, rot = 0) {
+    const r = R * 0.42;
+    let out = `<g transform="rotate(${rot} ${cx} ${cy})">`;
+    for (let i = 0; i < 5; i++) {
+      const a = -Math.PI / 2 + i * 2 * Math.PI / 5;
+      const tip = [cx + Math.cos(a) * R, cy + Math.sin(a) * R];
+      const l = [cx + Math.cos(a - Math.PI / 5) * r, cy + Math.sin(a - Math.PI / 5) * r];
+      const rr = [cx + Math.cos(a + Math.PI / 5) * r, cy + Math.sin(a + Math.PI / 5) * r];
+      out += `<path d="M${cx},${cy} L${tip} L${l} Z" fill="${light}"/><path d="M${cx},${cy} L${tip} L${rr} Z" fill="${dark}"/>`;
+    }
+    return out + `</g>`;
+  }
+  // tall, stretched-down word
+  const tallWord = (str, cx, baseline, size, stretch, len, attrs) =>
+    `<g transform="translate(${cx} ${baseline}) scale(1 ${stretch})"><text x="0" y="0" font-family="'Anton'" font-size="${size}" text-anchor="middle" textLength="${len}" lengthAdjust="spacingAndGlyphs" ${attrs}>${str}</text></g>`;
+
   // ---------- the designs ----------
   const DESIGNS = [
+    {
+      id: "swag-leopard",
+      name: "#SWAG (Scene Blue Cheetah)",
+      blurb: "tall stretched-down #SWAG filled w/ scene blue cheetah print. peak 2009 energy.",
+      inks: [SCENE, SCENE_MID, SCENE_DARK, WHITE], tees: [BLACK, WHITE],
+      art: () => `
+        ${leopardPattern("leo-blue", SCENE, SCENE_MID, SCENE_DARK, 2.4, (2.4 / 2.3).toFixed(4))}
+        ${tallWord("#SWAG", 762, 1272, 430, 2.3, 1400, `fill="${SCENE_DARK}"`)}
+        ${tallWord("#SWAG", 750, 1260, 430, 2.3, 1400, `fill="url(#leo-blue)" stroke="${WHITE}" stroke-width="7" paint-order="stroke"`)}`,
+    },
+    {
+      id: "swag-stars-drips",
+      name: "#SWAG (Stars + Drips)",
+      blurb: "stretched-down scene blue #SWAG dripping over nautical stars + halftone stripes. like the tee u had in 7th grade.",
+      inks: [SCENE, WHITE], tees: [BLACK, "#0d2b4d"],
+      art: () => {
+        let stripes = "";
+        [520, 650, 780, 910, 1040, 1170].forEach((y, i) => {
+          const x0 = 300 + (i % 3) * 40;
+          stripes += `<rect x="${x0}" y="${y}" width="${1460 - x0}" height="64" fill="${i % 2 ? SCENE : WHITE}"/>`;
+          for (let k = 0; k < 9; k++) stripes += `<circle cx="${x0 - 30 - k * 34}" cy="${y + 32}" r="${Math.max(3, 28 - k * 3)}" fill="${i % 2 ? SCENE : WHITE}"/>`;
+        });
+        const drips = [[300, 150], [470, 260], [640, 110], [820, 330], [1010, 180], [1180, 240]]
+          .map(([x, h]) => `<path d="M${x - 34},1200 L${x - 26},${1250 + h} A 26 26 0 0 0 ${x + 26},${1250 + h} L${x + 34},1200 Z" fill="${SCENE}"/>`).join("");
+        return `
+        ${stripes}
+        ${nauticalStar(1200, 450, 250, WHITE, SCENE, 12)}
+        ${nauticalStar(260, 1360, 200, WHITE, SCENE, -10)}
+        ${nauticalStar(1260, 1420, 110, WHITE, SCENE, 20)}
+        ${drips}
+        ${tallWord("#SWAG", 750, 1270, 430, 2.3, 1400, `fill="${SCENE}" stroke="${BLACK}" stroke-width="10" paint-order="stroke"`)}
+        ${pixels(SPARK, 180, 520, 16, { X: WHITE })}${pixels(SPARK, 1330, 1150, 14, { X: SCENE })}`;
+      },
+    },
+    {
+      id: "epic-face",
+      name: "Epic Face",
+      blurb: "the big derpy smiley from every 2008 forum, but make it a vampire. fangs out, eyes rolled up.",
+      inks: [WHITE, PINK], tees: [BLACK, SCENE],
+      art: () => `
+        <circle cx="750" cy="900" r="560" fill="${WHITE}"/>
+        <g fill="${WHITE}" stroke="${BLACK}" stroke-width="22">
+          <path d="M470 760 C 470 620, 690 620, 690 760 Q 690 790 660 790 L 500 790 Q 470 790 470 760 Z"/>
+          <path d="M810 760 C 810 620, 1030 620, 1030 760 Q 1030 790 1000 790 L 840 790 Q 810 790 810 760 Z"/></g>
+        <circle cx="600" cy="712" r="40" fill="${BLACK}"/><circle cx="940" cy="712" r="40" fill="${BLACK}"/>
+        <path d="M430 940 Q 750 1010 1070 930 Q 1060 1300 760 1320 Q 450 1320 430 940 Z" fill="${BLACK}"/>
+        <path d="M470 965 Q 750 1025 1030 955 L 1030 985 Q 750 1060 470 995 Z" fill="${WHITE}"/>
+        <path d="M560 990 L 600 1110 L 640 1005 Z M860 1005 L 900 1110 L 940 990 Z" fill="${WHITE}"/>
+        <path d="M600 1290 Q 600 1170 760 1170 Q 920 1170 920 1290 Q 840 1325 760 1322 Q 680 1325 600 1290 Z" fill="${PINK}"/>`,
+    },
     {
       id: "breakdowns-broken-hearts",
       name: "Breakdowns & Broken Hearts",
