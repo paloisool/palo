@@ -28,3 +28,5 @@ The shop name, bio, interests and so on are in `index.html`.
 
 ## Ashgrove Streets (`ashgrove/`)
 An original open-world city game that runs in the browser: walk, steal cars, run courier jobs, find 12 hidden stashes and shake off the police. Open `ashgrove/index.html` on a phone (landscape) for touch controls, or on desktop with WASD + mouse. It loads Three.js from cdnjs, so it needs an internet connection. "Play my own clip" plays a video from your device full screen behind the touch controls (the file stays on the device).
+
+You can also paste a YouTube link on the start screen. The video plays through YouTube's own player behind the touch controls: Gas and Brake change its playback speed, and steering pans the picture. YouTube links only work when the page is served from a normal web host such as GitHub Pages (Settings → Pages → deploy from this branch, then open `/ashgrove/`). They don't work inside the claude.ai artifact viewer, which blocks embedded players, or when the file is opened directly from disk. Some uploaders turn off embedding, and those videos won't play.

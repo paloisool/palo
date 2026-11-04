@@ -28,6 +28,11 @@ body {
 #view { position: fixed; inset: 0; }
 #view canvas { display: block; width: 100%; height: 100%; }
 #touch { position: fixed; inset: 0; z-index: 2; }
+#ytWrap { position: fixed; inset: -6%; z-index: 1; background: #000; pointer-events: none; }
+#ytWrap iframe { width: 100%; height: 100%; border: 0; pointer-events: none; }
+.yt { display: flex; gap: 8px; width: min(100%, 460px); }
+.yt input { flex: 1; min-width: 0; font: 500 16px var(--hud); color: var(--ink); background: rgba(0,0,0,.4); border: 2px solid var(--edge); border-radius: 10px; padding: 10px 12px; }
+.yt input::placeholder { color: var(--ink-dim); }
 #clip { position: fixed; inset: -6%; width: 112%; height: 112%; object-fit: cover; z-index: 1; background: #000; transition: filter .15s; }
 body.clipMode #view, body.clipMode #radarWrap, body.clipMode #objective, body.clipMode #hint, body.clipMode #reticle { display: none !important; }
 #tapPlay { position: fixed; inset: 0; z-index: 5; display: grid; place-items: center; font: 400 34px var(--display); letter-spacing: .06em; background: rgba(0,0,0,.45); }
@@ -133,6 +138,7 @@ body.desktop .btn, body.desktop #joyBase { display: none !important; }
 
 <div id="view"></div>
 <video id="clip" playsinline webkit-playsinline loop hidden></video>
+<div id="ytWrap" hidden><div id="yt"></div></div>
 <input type="file" id="clipFile" accept="video/*" hidden>
 <div id="touch"></div>
 
@@ -175,6 +181,7 @@ body.desktop .btn, body.desktop #joyBase { display: none !important; }
     <h1>Ashgrove<span>Streets</span></h1>
     <p>A rain-worn harbor city at dusk. Steal a ride, run courier jobs, find the twelve hidden stashes, and keep the Ashgrove PD off your back.</p>
     <div class="row"><button class="go" id="goBtn">Play</button><button class="ghost" id="clipBtn">Play my own clip</button></div>
+    <form class="yt" id="ytForm"><input id="ytUrl" type="url" inputmode="url" placeholder="Paste a YouTube link" aria-label="YouTube link"><button class="ghost" type="submit">Play</button></form>
     <p id="clipNote" style="font-size:14px">Clip mode plays a video from your phone full screen behind the touch controls. It stays on your device and is never uploaded.</p>
     <div class="rotate">Turn your phone sideways for the best view</div>
     <p id="ctrlNote">Left thumb: drag anywhere on the left to move or steer. Right thumb: drag to look, tap the buttons to act.</p>
@@ -1227,24 +1234,74 @@ function frame(now) {
 }
 
 // ---------- boot ----------
-function setPaused(p) { if (!$('#start').hidden) return; paused = p; $('#pause').hidden = !p; if (clipMode) { if (p) clip.pause(); else clip.play().catch(() => { $('#tapPlay').hidden = false; }); } if (AC) { if (p) AC.suspend(); else AC.resume(); } last = performance.now(); }
+function setPaused(p) { if (!$('#start').hidden) return; paused = p; $('#pause').hidden = !p; if (clipMode) { if (p) media.pause(); else media.play(); } if (AC) { if (p) AC.suspend(); else AC.resume(); } last = performance.now(); }
 // ---------- clip mode: plays the player's own video behind the controls ----------
+// media wraps either the local <video> or a YouTube player
+let ytPlayer = null, ytReady = false, ytRate = 1;
+const media = {
+  kind: 'file',
+  el() { return this.kind === 'yt' ? $('#ytWrap') : clip; },
+  play() { if (this.kind === 'yt') { if (ytPlayer && ytPlayer.playVideo) ytPlayer.playVideo(); } else clip.play().then(() => { $('#tapPlay').hidden = true; }).catch(() => { $('#tapPlay').hidden = false; }); },
+  pause() { if (this.kind === 'yt') { if (ytPlayer && ytPlayer.pauseVideo) ytPlayer.pauseVideo(); } else clip.pause(); },
+  rate() { return this.kind === 'yt' ? ytRate : clip.playbackRate; },
+  setRate(r) {
+    if (this.kind === 'yt') { // YouTube only accepts its own steps
+      const steps = [.5, .75, 1, 1.25, 1.5, 2]; let best = 1; for (const s of steps) if (Math.abs(s - r) < Math.abs(best - r)) best = s;
+      if (best !== ytRate && ytPlayer && ytPlayer.setPlaybackRate) { ytRate = best; ytPlayer.setPlaybackRate(best); }
+    } else if (Math.abs(clip.playbackRate - r) > .01) { try { clip.playbackRate = lerp(clip.playbackRate, r, .15); } catch (e) { } }
+  },
+};
+function ytId(u) {
+  u = (u || '').trim(); if (/^[\w-]{11}$/.test(u)) return u;
+  const m = u.match(/(?:youtu\.be\/|[?&]v=|\/shorts\/|\/embed\/|\/live\/)([\w-]{11})/); return m ? m[1] : null;
+}
+function loadYTApi() {
+  return new Promise((res, rej) => {
+    if (window.YT && window.YT.Player) return res();
+    const t = setTimeout(() => rej(new Error('blocked')), 6000);
+    window.onYouTubeIframeAPIReady = () => { clearTimeout(t); res(); };
+    const sc = document.createElement('script'); sc.src = 'https://www.youtube.com/iframe_api'; sc.onerror = () => { clearTimeout(t); rej(new Error('blocked')); }; document.head.appendChild(sc);
+  });
+}
+$('#ytForm').addEventListener('submit', async e => {
+  e.preventDefault(); initAudio();
+  const id = ytId($('#ytUrl').value);
+  const note = $('#clipNote');
+  if (!id) { note.textContent = 'That doesn\'t look like a YouTube link. Copy it from the Share button on YouTube and paste it here.'; return; }
+  note.textContent = 'Loading YouTube…';
+  try { await loadYTApi(); } catch (err) { note.textContent = 'YouTube is blocked on this page. Open the game from your own web host (see the README), or use "Play my own clip" with a downloaded video.'; return; }
+  media.kind = 'yt'; $('#ytWrap').hidden = false; ytRate = 1;
+  const start = () => { enterClipMode(); say('Video loaded. Gas speeds it up, Brake slows it down, Car switches button sets.', 4); };
+  if (ytPlayer) { ytPlayer.loadVideoById(id); start(); return; }
+  ytPlayer = new YT.Player('yt', {
+    videoId: id, width: '100%', height: '100%',
+    playerVars: { autoplay: 1, controls: 0, disablekb: 1, fs: 0, modestbranding: 1, rel: 0, playsinline: 1, loop: 1, playlist: id, iv_load_policy: 3 },
+    events: {
+      onReady: ev => { ytReady = true; ev.target.playVideo(); },
+      onStateChange: ev => { if (ev.data === 1) $('#tapPlay').hidden = true; if (ev.data === -1 || ev.data === 5) $('#tapPlay').hidden = false; },
+      onError: ev => { say(ev.data === 101 || ev.data === 150 ? 'The owner of that video doesn\'t allow it to play outside YouTube. Try another link.' : 'YouTube couldn\'t play that video.', 5); },
+    },
+  });
+  start();
+});
+function enterClipMode() {
+  clipMode = true; document.body.classList.add('clipMode'); $('#start').hidden = true; $('#pause').hidden = true; $('#cityBtn').hidden = false; paused = false;
+  document.body.classList.toggle('inCar', clipCar); ui.hint.hidden = true; clipLast = performance.now();
+}
 let clipMode = false, clipURL = null, clipPan = { x: 0, y: 0, r: 0 }, clipLast = 0, clipCar = false;
 const clip = $('#clip'), clipFile = $('#clipFile');
 function pickClip() { initAudio(); clipFile.value = ''; clipFile.click(); }
 clipFile.addEventListener('change', () => {
   const f = clipFile.files && clipFile.files[0]; if (!f) return;
   if (clipURL) URL.revokeObjectURL(clipURL);
-  clipURL = URL.createObjectURL(f); clip.src = clipURL; clip.hidden = false;
-  clipMode = true; document.body.classList.add('clipMode'); $('#start').hidden = true; $('#pause').hidden = true; $('#cityBtn').hidden = false; paused = false;
-  document.body.classList.toggle('inCar', clipCar);
-  ui.hint.hidden = true; clipLast = performance.now();
-  clip.play().then(() => { $('#tapPlay').hidden = true; }).catch(() => { $('#tapPlay').hidden = false; });
+  if (media.kind === 'yt' && ytPlayer && ytPlayer.stopVideo) ytPlayer.stopVideo(); $('#ytWrap').hidden = true;
+  media.kind = 'file'; clipURL = URL.createObjectURL(f); clip.src = clipURL; clip.hidden = false;
+  enterClipMode(); media.play();
   say('Clip loaded. Gas speeds it up, Brake slows it down, Car switches button sets.', 4);
 });
-$('#tapPlay').addEventListener('pointerdown', e => { e.preventDefault(); clip.play().then(() => { $('#tapPlay').hidden = true; }).catch(() => { }); });
+$('#tapPlay').addEventListener('pointerdown', e => { e.preventDefault(); media.play(); if (media.kind === 'yt') $('#tapPlay').hidden = true; });
 function leaveClip() {
-  clipMode = false; clip.pause(); clip.hidden = true; clip.removeAttribute('src'); clip.load(); if (clipURL) { URL.revokeObjectURL(clipURL); clipURL = null; }
+  clipMode = false; if (ytPlayer && ytPlayer.stopVideo) ytPlayer.stopVideo(); $('#ytWrap').hidden = true; media.kind = 'file'; clip.pause(); clip.hidden = true; clip.removeAttribute('src'); clip.load(); if (clipURL) { URL.revokeObjectURL(clipURL); clipURL = null; }
   document.body.classList.remove('clipMode'); document.body.classList.toggle('inCar', !!player.car); $('#cityBtn').hidden = true; $('#tapPlay').hidden = true; setPaused(false);
 }
 function clipFrame(now) {
@@ -1256,13 +1313,13 @@ function clipFrame(now) {
   clipPan.y = lerp(clipPan.y, (camPitch - .32) * 8 + (clipCar ? 0 : input.jy * -1.5), dt * 5);
   clipPan.r = lerp(clipPan.r, clipCar ? input.jx * 2.5 : 0, dt * 5);
   let sh = 0; if (shake > 0) { sh = shake; shake = Math.max(0, shake - dt * 3); }
-  clip.style.transform = `translate(${clipPan.x + rnd(-1, 1) * sh}%, ${clipPan.y + rnd(-1, 1) * sh}%) rotate(${clipPan.r}deg)`;
+  media.el().style.transform = `translate(${clipPan.x + rnd(-1, 1) * sh}%, ${clipPan.y + rnd(-1, 1) * sh}%) rotate(${clipPan.r}deg)`;
   // speed: gas / brake / run change playback rate
   let rate = 1;
   if (clipCar) { if (input.btn.gas || input.jy > .4) rate = 1.6; if (input.btn.brake || input.jy < -.4) rate = .45; if (input.btn.hand) rate = .8; }
   else { if (input.btn.sprint) rate = 1.5; }
-  if (Math.abs(clip.playbackRate - rate) > .01) { try { clip.playbackRate = lerp(clip.playbackRate, rate, Math.min(1, dt * 4)); } catch (e) { } }
-  ui.speedo.textContent = Math.round(clip.playbackRate * 60);
+  media.setRate(rate);
+  ui.speedo.textContent = Math.round(media.rate() * 60);
   if (input.tap.jump && !clipCar) { shake = .5; tone(300, .15, .2, 'sine', 500); }
   if (input.tap.attack) { if (player.weapon === 1) { sfx.shot(); shake = .8; const f = $('#flash'); f.style.background = '#ffd27a'; f.style.opacity = .25; setTimeout(() => { f.style.opacity = 0; f.style.background = ''; }, 60); } else { sfx.punch(); shake = .4; } }
   if (input.tap.enter) { clipCar = !clipCar; document.body.classList.toggle('inCar', clipCar); sfx.door(); }
