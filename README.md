@@ -27,4 +27,4 @@ The shop name, bio, interests and so on are in `index.html`.
 - `designs/designs.js`: where the designs are drawn. After editing it, run `node designs/render.js` (needs Playwright) to re-export the PNG and SVG files.
 
 ## Ashgrove Streets (`ashgrove/`)
-An original open-world city game that runs in the browser: walk, steal cars, run courier jobs, find 12 hidden stashes and shake off the police. Open `ashgrove/index.html` on a phone (landscape) for touch controls, or on desktop with WASD + mouse. It loads Three.js from cdnjs, so it needs an internet connection.
+An original open-world city game that runs in the browser: walk, steal cars, run courier jobs, find 12 hidden stashes and shake off the police. Open `ashgrove/index.html` on a phone (landscape) for touch controls, or on desktop with WASD + mouse. It loads Three.js from cdnjs, so it needs an internet connection. "Play my own clip" plays a video from your device full screen behind the touch controls (the file stays on the device).

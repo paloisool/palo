@@ -28,6 +28,9 @@ body {
 #view { position: fixed; inset: 0; }
 #view canvas { display: block; width: 100%; height: 100%; }
 #touch { position: fixed; inset: 0; z-index: 2; }
+#clip { position: fixed; inset: -6%; width: 112%; height: 112%; object-fit: cover; z-index: 1; background: #000; transition: filter .15s; }
+body.clipMode #view, body.clipMode #radarWrap, body.clipMode #objective, body.clipMode #hint, body.clipMode #reticle { display: none !important; }
+#tapPlay { position: fixed; inset: 0; z-index: 5; display: grid; place-items: center; font: 400 34px var(--display); letter-spacing: .06em; background: rgba(0,0,0,.45); }
 
 /* ---------- HUD ---------- */
 .hud { position: fixed; z-index: 3; pointer-events: none; text-shadow: 0 2px 0 rgba(0,0,0,.7), 0 0 6px rgba(0,0,0,.6); }
@@ -129,6 +132,8 @@ body.desktop .btn, body.desktop #joyBase { display: none !important; }
 </style>
 
 <div id="view"></div>
+<video id="clip" playsinline webkit-playsinline loop hidden></video>
+<input type="file" id="clipFile" accept="video/*" hidden>
 <div id="touch"></div>
 
 <div id="radarWrap" class="hud"><canvas id="radar" width="264" height="264"></canvas></div>
@@ -148,6 +153,7 @@ body.desktop .btn, body.desktop #joyBase { display: none !important; }
 <div id="speedo" class="hud carOnly"><b>0</b> km/h</div>
 <div id="reticle" hidden></div>
 <div id="flash"></div>
+<div id="tapPlay" hidden>Tap to play the clip</div>
 <div id="big" hidden><div><h2 id="bigT">Hospitalized</h2><p id="bigP"></p></div></div>
 
 <div id="joyBase" hidden><div id="joyKnob"></div></div>
@@ -168,7 +174,8 @@ body.desktop .btn, body.desktop #joyBase { display: none !important; }
   <div class="card">
     <h1>Ashgrove<span>Streets</span></h1>
     <p>A rain-worn harbor city at dusk. Steal a ride, run courier jobs, find the twelve hidden stashes, and keep the Ashgrove PD off your back.</p>
-    <button class="go" id="goBtn">Play</button>
+    <div class="row"><button class="go" id="goBtn">Play</button><button class="ghost" id="clipBtn">Play my own clip</button></div>
+    <p id="clipNote" style="font-size:14px">Clip mode plays a video from your phone full screen behind the touch controls. It stays on your device and is never uploaded.</p>
     <div class="rotate">Turn your phone sideways for the best view</div>
     <p id="ctrlNote">Left thumb: drag anywhere on the left to move or steer. Right thumb: drag to look, tap the buttons to act.</p>
   </div>
@@ -190,6 +197,8 @@ body.desktop .btn, body.desktop #joyBase { display: none !important; }
     <div class="row">
       <button class="go" id="resumeBtn">Resume</button>
       <button class="ghost" id="soundBtn">Sound: on</button>
+      <button class="ghost" id="clipBtn2">Load a clip</button>
+      <button class="ghost" id="cityBtn" hidden>Back to the city</button>
     </div>
   </div>
 </div>
@@ -1134,6 +1143,7 @@ function respawn() {
 let last = performance.now(), radarT = 0, saveT = 0;
 function frame(now) {
   requestAnimationFrame(frame);
+  if (clipMode) { clipFrame(now); return; }
   let dt = Math.min(.05, (now - last) / 1000); last = now;
   if (paused) { renderer.render(scene, camera); return; }
   if (over) { overT += dt; dt *= .35; if (overT > 3.2) respawn(); }
@@ -1217,7 +1227,56 @@ function frame(now) {
 }
 
 // ---------- boot ----------
-function setPaused(p) { if (!$('#start').hidden) return; paused = p; $('#pause').hidden = !p; if (AC) { if (p) AC.suspend(); else AC.resume(); } last = performance.now(); }
+function setPaused(p) { if (!$('#start').hidden) return; paused = p; $('#pause').hidden = !p; if (clipMode) { if (p) clip.pause(); else clip.play().catch(() => { $('#tapPlay').hidden = false; }); } if (AC) { if (p) AC.suspend(); else AC.resume(); } last = performance.now(); }
+// ---------- clip mode: plays the player's own video behind the controls ----------
+let clipMode = false, clipURL = null, clipPan = { x: 0, y: 0, r: 0 }, clipLast = 0, clipCar = false;
+const clip = $('#clip'), clipFile = $('#clipFile');
+function pickClip() { initAudio(); clipFile.value = ''; clipFile.click(); }
+clipFile.addEventListener('change', () => {
+  const f = clipFile.files && clipFile.files[0]; if (!f) return;
+  if (clipURL) URL.revokeObjectURL(clipURL);
+  clipURL = URL.createObjectURL(f); clip.src = clipURL; clip.hidden = false;
+  clipMode = true; document.body.classList.add('clipMode'); $('#start').hidden = true; $('#pause').hidden = true; $('#cityBtn').hidden = false; paused = false;
+  document.body.classList.toggle('inCar', clipCar);
+  ui.hint.hidden = true; clipLast = performance.now();
+  clip.play().then(() => { $('#tapPlay').hidden = true; }).catch(() => { $('#tapPlay').hidden = false; });
+  say('Clip loaded. Gas speeds it up, Brake slows it down, Car switches button sets.', 4);
+});
+$('#tapPlay').addEventListener('pointerdown', e => { e.preventDefault(); clip.play().then(() => { $('#tapPlay').hidden = true; }).catch(() => { }); });
+function leaveClip() {
+  clipMode = false; clip.pause(); clip.hidden = true; clip.removeAttribute('src'); clip.load(); if (clipURL) { URL.revokeObjectURL(clipURL); clipURL = null; }
+  document.body.classList.remove('clipMode'); document.body.classList.toggle('inCar', !!player.car); $('#cityBtn').hidden = true; $('#tapPlay').hidden = true; setPaused(false);
+}
+function clipFrame(now) {
+  const dt = Math.min(.05, (now - clipLast) / 1000); clipLast = now;
+  if (paused) { input.tap = {}; return; }
+  clockT += dt; readInput();
+  // look: joystick and right-thumb drag nudge the frame, like turning the camera
+  clipPan.x = lerp(clipPan.x, -input.jx * 4 + wrapA(camYaw - Math.PI / 2) * -6, dt * 5);
+  clipPan.y = lerp(clipPan.y, (camPitch - .32) * 8 + (clipCar ? 0 : input.jy * -1.5), dt * 5);
+  clipPan.r = lerp(clipPan.r, clipCar ? input.jx * 2.5 : 0, dt * 5);
+  let sh = 0; if (shake > 0) { sh = shake; shake = Math.max(0, shake - dt * 3); }
+  clip.style.transform = `translate(${clipPan.x + rnd(-1, 1) * sh}%, ${clipPan.y + rnd(-1, 1) * sh}%) rotate(${clipPan.r}deg)`;
+  // speed: gas / brake / run change playback rate
+  let rate = 1;
+  if (clipCar) { if (input.btn.gas || input.jy > .4) rate = 1.6; if (input.btn.brake || input.jy < -.4) rate = .45; if (input.btn.hand) rate = .8; }
+  else { if (input.btn.sprint) rate = 1.5; }
+  if (Math.abs(clip.playbackRate - rate) > .01) { try { clip.playbackRate = lerp(clip.playbackRate, rate, Math.min(1, dt * 4)); } catch (e) { } }
+  ui.speedo.textContent = Math.round(clip.playbackRate * 60);
+  if (input.tap.jump && !clipCar) { shake = .5; tone(300, .15, .2, 'sine', 500); }
+  if (input.tap.attack) { if (player.weapon === 1) { sfx.shot(); shake = .8; const f = $('#flash'); f.style.background = '#ffd27a'; f.style.opacity = .25; setTimeout(() => { f.style.opacity = 0; f.style.background = ''; }, 60); } else { sfx.punch(); shake = .4; } }
+  if (input.tap.enter) { clipCar = !clipCar; document.body.classList.toggle('inCar', clipCar); sfx.door(); }
+  if (input.tap.weapon) { player.weapon = 1 - player.weapon; updWeapon(); }
+  if (AC) { const t = AC.currentTime; eng.g.gain.setTargetAtTime(0, t, .1); sir.g.gain.setTargetAtTime(0, t, .1); horn.g.gain.setTargetAtTime(clipCar && input.btn.horn ? .18 : 0, t, .02); }
+  if (msgT > 0) { msgT -= dt; if (msgT <= 0) ui.msg.classList.remove('show'); }
+  const hh = Math.floor(timeOfDay), mm = Math.floor((timeOfDay % 1) * 60); timeOfDay = (timeOfDay + dt / 60) % 24; ui.clock.textContent = String(hh).padStart(2, '0') + ':' + String(mm).padStart(2, '0');
+  ui.money.textContent = '$' + String(money).padStart(8, '0');
+  input.tap = {};
+}
+$('#clipBtn').addEventListener('click', pickClip);
+$('#clipBtn2').addEventListener('click', pickClip);
+$('#cityBtn').addEventListener('click', leaveClip);
+
 $('#goBtn').addEventListener('click', () => {
   initAudio(); $('#start').hidden = true; paused = false; last = performance.now();
   try { if (isTouch && document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().then(() => screen.orientation && screen.orientation.lock && screen.orientation.lock('landscape').catch(() => { })).catch(() => { }); } catch (e) { }
