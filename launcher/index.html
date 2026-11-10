@@ -70,6 +70,38 @@ button:focus-visible, input:focus-visible, label:focus-within { outline: 3px sol
 .menuTop .logoImg { max-height: 22vh; max-width: 34vw; }
 .menuTop .textLogo { font-size: clamp(28px, 5vw, 52px); }
 .foot { margin-top: 14px; font: 600 13px var(--ui); letter-spacing: .14em; text-transform: uppercase; color: var(--dim); }
+.cm { gap: 10px; }
+.cmTop { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.cmTop .logoImg { max-height: 20vh; max-width: 32vw; }
+.cmTop .textLogo { font-size: clamp(28px, 5vw, 52px); }
+.cmTag { font: 600 12px var(--ui); letter-spacing: .2em; text-transform: uppercase; color: var(--dim); background: rgba(0,0,0,.45); border: 1px solid var(--line); border-radius: 6px; padding: 4px 8px; }
+.cmBody { flex: 1; min-height: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 28px; align-items: end; }
+.cmBody .menuList { margin-top: 0; }
+.cmPanel { align-self: stretch; display: flex; flex-direction: column; justify-content: flex-end; min-width: 0; overflow: auto; touch-action: pan-y; }
+.cmPanel > div { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; display: grid; gap: 10px; backdrop-filter: blur(6px); }
+.cmPanel h3 { margin: 0; font: 700 24px/1 var(--display); letter-spacing: .04em; text-transform: uppercase; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; }
+.card2 { display: grid; gap: 4px; text-align: left; color: var(--ink); background: rgba(241,240,236,.06); border: 1px solid var(--line); border-radius: 10px; padding: 12px; cursor: pointer; transition: background .15s, border-color .15s; }
+.card2:hover, .card2:focus-visible { background: rgba(241,240,236,.14); border-color: var(--accent); }
+.card2 b { font: 700 18px var(--ui); letter-spacing: .04em; }
+.card2 span { font: 500 14px/1.25 var(--ui); color: var(--dim); }
+.card2.slim { padding: 9px 12px; }
+.segTabs { display: flex; gap: 4px; }
+.segTabs button { font: 700 14px var(--ui); letter-spacing: .1em; text-transform: uppercase; color: var(--dim); background: none; border: 0; border-bottom: 3px solid transparent; padding: 6px 8px; cursor: pointer; }
+.segTabs button.on { color: var(--ink); border-bottom-color: var(--accent); }
+.sets { display: grid; gap: 8px; }
+.gal { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 6px; }
+.gal button { padding: 0; border: 0; border-radius: 8px; overflow: hidden; aspect-ratio: 16 / 9; max-width: 100%; cursor: pointer; background: #222; }
+.gal img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cred { margin: 0; font: 600 18px/1.4 var(--ui); }
+.cmNote { margin: 0; font: 500 14px/1.35 var(--ui); color: var(--dim); max-width: 60ch; }
+.cmFoot { display: flex; gap: 18px; font: 600 13px var(--ui); letter-spacing: .12em; text-transform: uppercase; color: var(--dim); }
+.cmFoot i { font-style: normal; display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid var(--dim); margin-right: 6px; font-size: 11px; color: var(--ink); }
+.cmFoot #cmBy { margin-left: auto; }
+.demoToast { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,.85); border: 1px solid var(--accent); border-radius: 12px; padding: 14px 22px; font: 700 18px var(--ui); letter-spacing: .06em; text-align: center; z-index: 5; }
+.lightbox { position: absolute; inset: 0; z-index: 6; background: rgba(0,0,0,.92); display: grid; place-items: center; padding: 16px; }
+.lightbox img { max-width: 100%; max-height: 100%; object-fit: contain; }
+@media (max-width: 620px) { .cmBody { grid-template-columns: 1fr; } .cmFoot span:not(#cmBy) { display: none; } }
 .setPanel { position: absolute; right: max(22px, env(safe-area-inset-right, 0px)); bottom: max(18px, env(safe-area-inset-bottom, 0px)); width: min(360px, 52vw); background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; display: grid; gap: 10px; touch-action: auto; }
 .setPanel h3 { margin: 0; font: 700 15px var(--ui); letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
 .setRow { display: flex; justify-content: space-between; align-items: center; gap: 10px; font: 600 15px var(--ui); }
@@ -135,11 +167,12 @@ button:focus-visible, input:focus-visible, label:focus-within { outline: 3px sol
     <h1>Launcher Kit</h1>
     <p>Load your own logos, pictures and videos. When you launch, it plays: boot logo, opening video, title screen, menu, loading screen, then your gameplay video with touch controls on top. Everything stays on this device. Nothing is uploaded.</p>
     <label class="field" for="titleIn"><span class="note">Game name (shown if you don't add a logo)</span><input id="titleIn" type="text" value="My Game" maxlength="40"></label>
+    <label class="field" for="byIn"><span class="note">Made by (shown in the menu credits)</span><input id="byIn" type="text" value="" maxlength="40" placeholder="Your name"></label>
     <div class="slot"><h2>Boot logo</h2><p>Shows first, on black, when the app opens. Optional.</p><label class="pick">Choose<input id="fBoot" type="file" accept="image/*"></label><div class="state none" id="sBoot">No boot logo yet</div><div class="thumbs" id="tBoot"></div></div>
     <div class="slot"><h2>Opening video</h2><p>Plays full screen right after the boot logo, as the loading screen before the menu. Tap to skip. Optional.</p><label class="pick">Choose<input id="fOpen" type="file" accept="video/*"></label><div class="state none" id="sOpen">No opening video yet</div></div>
     <div class="slot"><h2>Game logo</h2><p>Shown on the title screen and menu. A PNG with a transparent background looks best.</p><label class="pick">Choose<input id="fLogo" type="file" accept="image/*"></label><div class="state none" id="sLogo">No logo yet</div><div class="thumbs" id="tLogo"></div></div>
     <div class="slot"><h2>Pictures</h2><p>Pick several. They rotate behind the title, menu and loading screens.</p><label class="pick">Choose<input id="fPics" type="file" accept="image/*" multiple></label><div class="state none" id="sPics">No pictures yet</div><div class="thumbs" id="tPics"></div></div>
-    <div class="slot"><h2>Gameplay video</h2><p>The video that plays when you start the game. Required.</p><label class="pick">Choose<input id="fVid" type="file" accept="video/*"></label><div class="state none" id="sVid">No video yet</div></div>
+    <div class="slot"><h2>Gameplay video</h2><p>Plays when you pick Continue in Story Mode. Optional: without it the menu is a pure demo.</p><label class="pick">Choose<input id="fVid" type="file" accept="video/*"></label><div class="state none" id="sVid">No video yet</div></div>
     <label class="check" for="remember"><input id="remember" type="checkbox" checked>Remember these on this phone</label>
     <p class="note" id="saveNote">Big videos might not fit in the phone's browser storage. If they don't, you'll pick the video again next time.</p>
     <button class="go" id="launchBtn" disabled>Launch</button>
@@ -156,23 +189,84 @@ button:focus-visible, input:focus-visible, label:focus-within { outline: 3px sol
 </section>
 
 <section id="menu" class="screen" hidden>
-  <div class="pad">
-    <div class="menuTop"><div id="menuLogo"></div></div>
-    <nav class="menuList" id="menuList" aria-label="Main menu">
-      <button class="mi sel" data-act="story">Story mode</button>
-      <button class="mi" data-act="free">Free roam</button>
-      <button class="mi" data-act="settings">Settings</button>
-      <button class="mi" data-act="assets">Change pictures &amp; video</button>
-    </nav>
-    <div class="foot" id="menuFoot">Tap an option</div>
+  <div class="pad cm">
+    <header class="cmTop"><div id="menuLogo"></div><div class="cmTag">Concept menu · demo</div></header>
+    <div class="cmBody">
+      <nav class="menuList" id="menuList" aria-label="Main menu">
+        <button class="mi sel" data-act="story">Story Mode</button>
+        <button class="mi" data-act="online">Online</button>
+        <button class="mi" data-act="settings">Settings</button>
+        <button class="mi" data-act="gallery">Gallery</button>
+        <button class="mi" data-act="store">Store</button>
+        <button class="mi" data-act="credits">Credits</button>
+        <button class="mi" data-act="quit">Quit</button>
+      </nav>
+      <div class="cmPanel" id="cmPanel" aria-live="polite">
+        <div data-p="story">
+          <h3>Story Mode</h3>
+          <div class="cards">
+            <button class="card2" data-demo="continue"><b>Continue</b><span>Chapter 1 · 0% complete</span></button>
+            <button class="card2" data-demo="new"><b>New Game</b><span>Start from the beginning</span></button>
+            <button class="card2" data-demo="load"><b>Load Game</b><span>3 save slots</span></button>
+          </div>
+        </div>
+        <div data-p="online" hidden>
+          <h3>Online</h3>
+          <div class="cards">
+            <button class="card2" data-demo><b>Character 1</b><span>Empty slot · Create a character</span></button>
+            <button class="card2" data-demo><b>Character 2</b><span>Empty slot · Create a character</span></button>
+            <button class="card2" data-demo><b>Join Friends</b><span>0 friends online</span></button>
+          </div>
+          <p class="cmNote">Online services are not part of this concept.</p>
+        </div>
+        <div data-p="settings" hidden>
+          <h3>Settings</h3>
+          <div class="segTabs" id="segTabs"><button class="on" data-st="display">Display</button><button data-st="audio">Audio</button><button data-st="controls">Controls</button></div>
+          <div class="sets" data-st="display">
+            <label class="setRow" for="dBright">Brightness<input id="dBright" type="range" min="0" max="10" value="5"></label>
+            <label class="setRow" for="dHud">Show HUD<input id="dHud" type="checkbox" checked></label>
+            <label class="setRow" for="dSub">Subtitles<input id="dSub" type="checkbox" checked></label>
+            <label class="setRow" for="dFov">Field of view<input id="dFov" type="range" min="0" max="10" value="5"></label>
+          </div>
+          <div class="sets" data-st="audio" hidden>
+            <label class="setRow" for="volR">Video volume<input id="volR" type="range" min="0" max="1" step="0.05" value="1"></label>
+            <label class="setRow" for="fxR">Menu sounds<input id="fxR" type="range" min="0" max="1" step="0.05" value="0.6"></label>
+            <label class="setRow" for="aRadio">Radio in cars<input id="aRadio" type="checkbox" checked></label>
+          </div>
+          <div class="sets" data-st="controls" hidden>
+            <label class="setRow" for="ctlC">Show touch controls<input id="ctlC" type="checkbox" checked></label>
+            <label class="setRow" for="cVib">Vibration<input id="cVib" type="checkbox" checked></label>
+            <label class="setRow" for="loadR">Loading screen length<input id="loadR" type="range" min="1" max="10" step="1" value="4"></label>
+            <button class="card2 slim" data-act2="assets"><b>Change pictures &amp; videos</b></button>
+          </div>
+        </div>
+        <div data-p="gallery" hidden>
+          <h3>Gallery</h3>
+          <div class="gal" id="gal"></div>
+        </div>
+        <div data-p="store" hidden>
+          <h3>Store</h3>
+          <div class="cards">
+            <button class="card2" data-demo><b>Starter Pack</b><span>Concept item · not for sale</span></button>
+            <button class="card2" data-demo><b>Vehicle Bundle</b><span>Concept item · not for sale</span></button>
+            <button class="card2" data-demo><b>Cash Card</b><span>Concept item · not for sale</span></button>
+          </div>
+        </div>
+        <div data-p="credits" hidden>
+          <h3>Credits</h3>
+          <p class="cred" id="credBy"></p>
+          <p class="cmNote">Fan-made concept for demonstration only. Not an official product and not affiliated with or endorsed by any game publisher. All trademarks belong to their owners.</p>
+        </div>
+        <div data-p="quit" hidden>
+          <h3>Quit?</h3>
+          <div class="cards"><button class="card2" data-act2="title"><b>Back to title screen</b></button><button class="card2" data-act2="assets"><b>Back to setup</b></button></div>
+        </div>
+      </div>
+    </div>
+    <footer class="cmFoot"><span><i>A</i> Select</span><span><i>B</i> Back</span><span id="cmBy"></span></footer>
   </div>
-  <div class="setPanel" id="setPanel" hidden>
-    <h3>Settings</h3>
-    <label class="setRow" for="volR">Video volume<input id="volR" type="range" min="0" max="1" step="0.05" value="1"></label>
-    <label class="setRow" for="fxR">Effects volume<input id="fxR" type="range" min="0" max="1" step="0.05" value="0.6"></label>
-    <label class="setRow" for="ctlC">Show touch controls<input id="ctlC" type="checkbox" checked></label>
-    <label class="setRow" for="loadR">Loading screen length<input id="loadR" type="range" min="1" max="10" step="1" value="4"></label>
-  </div>
+  <div class="demoToast" id="demoToast" hidden></div>
+  <div class="lightbox" id="lightbox" hidden><img id="lbImg" alt=""></div>
 </section>
 
 <section id="loading" class="screen" hidden>
@@ -244,7 +338,7 @@ function refreshSetup() {
   $('#sPics').textContent = A.pics.length ? `${A.pics.length} picture${A.pics.length > 1 ? 's' : ''} loaded` : 'No pictures yet'; $('#sPics').classList.toggle('none', !A.pics.length);
   $('#tPics').innerHTML = URLS.pics.map(u => `<img src="${u}" alt="">`).join('');
   $('#sVid').textContent = A.video ? `Video loaded · ${(A.video.size / 1048576).toFixed(0)} MB` : 'No video yet'; $('#sVid').classList.toggle('none', !A.video);
-  $('#launchBtn').disabled = !A.video;
+  $('#launchBtn').disabled = false; $('#byIn').value = A.by || '';
 }
 $('#fBoot').addEventListener('change', e => { const f = e.target.files[0]; if (!f) return; A.boot = f; setURL('boot', f); refreshSetup(); });
 $('#fOpen').addEventListener('change', e => { const f = e.target.files[0]; if (!f) return; A.open = f; setURL('open', f); refreshSetup(); });
@@ -252,6 +346,8 @@ $('#fLogo').addEventListener('change', e => { const f = e.target.files[0]; if (!
 $('#fPics').addEventListener('change', e => { const fs = [...e.target.files]; if (!fs.length) return; URLS.pics.forEach(u => URL.revokeObjectURL(u)); A.pics = fs; URLS.pics = fs.map(f => URL.createObjectURL(f)); refreshSetup(); });
 $('#fVid').addEventListener('change', e => { const f = e.target.files[0]; if (!f) return; A.video = f; setURL('video', f); refreshSetup(); });
 $('#titleIn').addEventListener('input', e => { A.title = e.target.value || 'My Game'; });
+$('#byIn').addEventListener('input', e => { A.by = e.target.value; try { localStorage.setItem('lk_by', A.by); } catch (er) { } });
+try { A.by = localStorage.getItem('lk_by') || ''; } catch (e) { }
 $('#launchBtn').addEventListener('click', async () => {
   initAudio(); unlockVideo(); primeOpening();
   if ($('#remember').checked) {
@@ -308,15 +404,37 @@ openVid.addEventListener('ended', endOpening);
 $('#opening').addEventListener('pointerdown', e => { e.preventDefault(); if (!$('#openTap').hidden) { openVid.play().then(() => { $('#openTap').hidden = true; }).catch(() => { }); return; } endOpening(); });
 function title() { menuBg('title'); $('#titleLogo').innerHTML = logoHTML(); show('title'); startSlides(); }
 $('#title').addEventListener('click', () => { initAudio(); unlockVideo(); tone(660, .08, .2, 'square'); menu(); });
-function menu() { menuBg('menu'); $('#menuLogo').innerHTML = logoHTML(); $('#pauseLogo').innerHTML = logoHTML(); show('menu'); $('#setPanel').hidden = true; startSlides(); }
+function menu() {
+  menuBg('menu'); $('#menuLogo').innerHTML = logoHTML(); $('#pauseLogo').innerHTML = logoHTML(); show('menu'); startSlides();
+  const by = (A.by || '').trim(); $('#credBy').innerHTML = `Menu concept by <b>${esc(by || 'you')}</b>`; $('#cmBy').textContent = by ? 'Concept by ' + by : 'Fan concept';
+  $('#gal').innerHTML = URLS.pics.length ? URLS.pics.map((u, i) => `<button data-pic="${i}" aria-label="Open picture ${i + 1}"><img src="${u}" alt=""></button>`).join('') : '<p class="cmNote">Add pictures in setup to fill the gallery.</p>';
+  openPanel('story');
+}
+function openPanel(name) {
+  document.querySelectorAll('#menuList .mi').forEach(m => m.classList.toggle('sel', m.dataset.act === name));
+  document.querySelectorAll('#cmPanel > div').forEach(d => d.hidden = d.dataset.p !== name);
+}
+let demoT = null;
+function demo(msg) { const t = $('#demoToast'); t.textContent = msg; t.hidden = false; clearTimeout(demoT); demoT = setTimeout(() => t.hidden = true, 1600); tone(330, .12, .18, 'triangle'); }
+$('#cmPanel').addEventListener('click', e => {
+  const st = e.target.closest('[data-st]'); if (st && st.tagName === 'BUTTON') { document.querySelectorAll('#segTabs button').forEach(b => b.classList.toggle('on', b === st)); document.querySelectorAll('.sets').forEach(x => x.hidden = x.dataset.st !== st.dataset.st); tone(600, .05, .15, 'square'); return; }
+  const a2 = e.target.closest('[data-act2]'); if (a2) { tone(520, .06, .15, 'square'); if (a2.dataset.act2 === 'assets') { stopSlides(); show('setup'); } else title(); return; }
+  const pic = e.target.closest('[data-pic]'); if (pic) { $('#lbImg').src = URLS.pics[+pic.dataset.pic]; $('#lightbox').hidden = false; return; }
+  const d = e.target.closest('[data-demo]'); if (!d) return;
+  if (d.dataset.demo === 'continue' && URLS.video) { tone(520, .06, .15, 'square'); load('story'); return; }
+  demo('Demo only · not available in this concept');
+});
+$('#lightbox').addEventListener('click', () => { $('#lightbox').hidden = true; });
+$('#cmPanel').addEventListener('input', e => { if (e.target.type === 'range') tone(500 + e.target.value * 30, .03, .08, 'square'); });
+$('#cmPanel').addEventListener('change', e => { if (e.target.type === 'checkbox') tone(e.target.checked ? 760 : 420, .05, .15, 'square'); });
+addEventListener('keydown', e => {
+  if ($('#menu').hidden) return;
+  const items = [...document.querySelectorAll('#menuList .mi')], i = items.findIndex(m => m.classList.contains('sel'));
+  if (e.code === 'ArrowDown' || e.code === 'ArrowUp') { e.preventDefault(); const n = items[(i + (e.code === 'ArrowDown' ? 1 : items.length - 1)) % items.length]; openPanel(n.dataset.act); n.focus(); tone(520, .05, .12, 'square'); }
+  if (e.code === 'Escape' || e.code === 'Backspace') { if (!$('#lightbox').hidden) $('#lightbox').hidden = true; else openPanel('story'); }
+});
 $('#menuList').addEventListener('click', e => {
-  const b = e.target.closest('[data-act]'); if (!b) return; initAudio(); unlockVideo();
-  document.querySelectorAll('#menuList .mi').forEach(m => m.classList.toggle('sel', m === b)); tone(520, .06, .15, 'square');
-  const act = b.dataset.act;
-  if (act === 'settings') { $('#setPanel').hidden = !$('#setPanel').hidden; return; }
-  $('#setPanel').hidden = true;
-  if (act === 'assets') { stopSlides(); show('setup'); return; }
-  load(act);
+  const b = e.target.closest('[data-act]'); if (!b) return; initAudio(); unlockVideo(); tone(520, .06, .15, 'square'); openPanel(b.dataset.act);
 });
 const TIPS = ['Push the stick all the way to run. Hold Run to sprint.', 'Gas speeds the footage up. Brake slows it down.', 'Drift gives the camera a lean. Tap Car to switch between walking and driving buttons.', 'Drag on the right side of the screen to look around.', 'Tap the pause button to restart the video or go back to the menu.'];
 function load(mode) {
