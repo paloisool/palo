@@ -145,16 +145,12 @@ button:focus-visible, input:focus-visible, label:focus-within { outline: 3px sol
 /* play */
 #play { background: #000; overflow: hidden; }
 #vid { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-#tapPlay { position: absolute; inset: 0; display: grid; place-items: center; font: 700 28px var(--display); letter-spacing: .08em; text-transform: uppercase; background: rgba(0,0,0,.5); z-index: 6; }
 #touch { position: absolute; inset: 0; z-index: 2; }
 .hud { position: absolute; z-index: 3; pointer-events: none; text-shadow: 0 2px 0 rgba(0,0,0,.7); }
 #stats { top: calc(env(safe-area-inset-top, 0px) + 10px); right: calc(env(safe-area-inset-right, 0px) + 14px); display: grid; justify-items: end; gap: 3px; font-variant-numeric: tabular-nums; }
 #money { font: 700 28px/1 var(--display); color: var(--good); letter-spacing: .03em; }
 .hp { width: 120px; height: 8px; background: rgba(0,0,0,.6); }
 .hp i { display: block; height: 100%; background: var(--bad); width: 100%; transition: width .2s; }
-#stars { font-size: 20px; letter-spacing: 1px; }
-#stars span { color: rgba(0,0,0,.4); -webkit-text-stroke: 1px rgba(255,255,255,.5); }
-#stars span.on { color: var(--accent); -webkit-text-stroke: 1px #5a4300; }
 #speedo { bottom: calc(env(safe-area-inset-bottom, 0px) + 16px); left: 50%; transform: translateX(-50%); font: 600 15px var(--ui); color: var(--dim); letter-spacing: .1em; }
 #speedo b { font-size: 24px; color: var(--ink); }
 #toast { bottom: calc(env(safe-area-inset-bottom, 0px) + 140px); left: 50%; transform: translateX(-50%); font: 700 18px var(--ui); text-align: center; opacity: 0; transition: opacity .3s; max-width: 70vw; }
@@ -189,7 +185,7 @@ button:focus-visible, input:focus-visible, label:focus-within { outline: 3px sol
 <section id="setup" class="screen">
   <div class="setupWrap">
     <h1>Launcher Kit</h1>
-    <p>Load your own logos, pictures and videos. When you launch, it plays: boot logo, opening video, title screen, menu, loading screen, then your gameplay video with touch controls on top. Everything stays on this device. Nothing is uploaded.</p>
+    <p>Load your own logos, pictures and videos. When you launch, it goes full screen and plays: boot logo, opening video, menu, loading screen, then your gameplay video with touch controls on top. Everything stays on this device. Nothing is uploaded.</p>
     <label class="field" for="titleIn"><span class="note">Game name (shown if you don't add a logo)</span><input id="titleIn" type="text" value="My Game" maxlength="40"></label>
     <label class="field" for="byIn"><span class="note">Made by (shown in the menu credits)</span><input id="byIn" type="text" value="" maxlength="40" placeholder="Your name"></label>
     <div class="slot"><h2>Boot logo</h2><p>Shows first, on black, when the app opens. Optional.</p><label class="pick">Choose<input id="fBoot" type="file" accept="image/*"></label><div class="state none" id="sBoot">No boot logo yet</div><div class="thumbs" id="tBoot"></div></div>
@@ -197,6 +193,7 @@ button:focus-visible, input:focus-visible, label:focus-within { outline: 3px sol
     <div class="slot"><h2>Game logo</h2><p>Shown on the title screen and menu. A PNG with a transparent background looks best.</p><label class="pick">Choose<input id="fLogo" type="file" accept="image/*"></label><div class="state none" id="sLogo">No logo yet</div><div class="thumbs" id="tLogo"></div></div>
     <div class="slot"><h2>Pictures</h2><p>Pick several. In order they fill the menu tiles: 1 Continue, 2 Progress, 3 New Game, 4 Replay, then 5 to 9 for the Online tiles. They also rotate behind the title and loading screens.</p><label class="pick">Choose<input id="fPics" type="file" accept="image/*" multiple></label><div class="state none" id="sPics">No pictures yet</div><div class="thumbs" id="tPics"></div></div>
     <div class="slot"><h2>Gameplay video</h2><p>Plays when you pick Continue in Story Mode. Optional: without it the menu is a pure demo.</p><label class="pick">Choose<input id="fVid" type="file" accept="video/*"></label><div class="state none" id="sVid">No video yet</div></div>
+    <label class="check" for="fsC"><input id="fsC" type="checkbox" checked>Go full screen when I launch</label>
     <label class="check" for="remember"><input id="remember" type="checkbox" checked>Remember these on this phone</label>
     <p class="note" id="saveNote">Big videos might not fit in the phone's browser storage. If they don't, you'll pick the video again next time.</p>
     <button class="go" id="launchBtn" disabled>Launch</button>
@@ -205,7 +202,7 @@ button:focus-visible, input:focus-visible, label:focus-within { outline: 3px sol
 </section>
 
 <section id="boot" class="screen" hidden><div class="bootInner" id="bootInner"></div></section>
-<section id="opening" class="screen" hidden style="background:#000"><video id="openVid" playsinline webkit-playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"></video><div class="foot" id="skipNote" style="position:absolute;right:max(18px,env(safe-area-inset-right,0px));bottom:max(14px,env(safe-area-inset-bottom,0px));text-shadow:0 2px 4px #000">Tap to skip</div><div id="openTap" hidden style="position:absolute;inset:0;display:grid;place-items:center;font:700 26px var(--display);letter-spacing:.08em;text-transform:uppercase;background:rgba(0,0,0,.5)">Tap to play</div></section>
+<section id="opening" class="screen" hidden style="background:#000"><video id="openVid" playsinline webkit-playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"></video><div class="foot" id="skipNote" style="position:absolute;right:max(18px,env(safe-area-inset-right,0px));bottom:max(14px,env(safe-area-inset-bottom,0px));text-shadow:0 2px 4px #000">Tap to skip</div></section>
 
 <section id="title" class="screen" hidden>
   <div class="bgimg" id="bgA"></div><div class="bgimg" id="bgB" style="opacity:0"></div><div class="shade"></div>
@@ -261,7 +258,7 @@ button:focus-visible, input:focus-visible, label:focus-within { outline: 3px sol
 <section id="play" class="screen" hidden>
   <video id="vid" playsinline webkit-playsinline loop></video>
   <div id="touch"></div>
-  <div id="stats" class="hud"><div id="money">$0</div><div class="hp"><i id="hpI"></i></div><div id="stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div></div>
+  <div id="stats" class="hud"><div id="money">$0</div></div>
   <div id="speedo" class="hud drive"><b>0</b> km/h</div>
   <div id="toast" class="hud"></div>
   <button id="pauseBtn" aria-label="Pause">II</button>
@@ -276,7 +273,6 @@ button:focus-visible, input:focus-visible, label:focus-within { outline: 3px sol
   <div class="btn drive" id="bD" data-b="drift"><svg viewBox="0 0 24 24"><path d="M6 18c0-6 4-10 12-10M14 4l4 4-4 4"/></svg><span class="l">Drift</span></div>
   <div class="btn drive" id="bH" data-b="horn"><svg viewBox="0 0 24 24"><path d="M4 10v4h3l5 4V6L7 10zM16 9a4 4 0 0 1 0 6"/></svg></div>
   <div class="btn drive" id="bX" data-b="car"><svg viewBox="0 0 24 24"><path d="M14 4h5v16h-5M10 8l-4 4 4 4M6 12h10"/></svg></div>
-  <div id="tapPlay" hidden>Tap to play</div>
 </section>
 
 <section id="pause" class="screen" hidden>
@@ -329,7 +325,16 @@ $('#fVid').addEventListener('change', e => { const f = e.target.files[0]; if (!f
 $('#titleIn').addEventListener('input', e => { A.title = e.target.value || 'My Game'; });
 $('#byIn').addEventListener('input', e => { A.by = e.target.value; try { localStorage.setItem('lk_by', A.by); } catch (er) { } });
 try { A.by = localStorage.getItem('lk_by') || ''; } catch (e) { }
+function goFull() {
+  const el = document.documentElement, req = el.requestFullscreen || el.webkitRequestFullscreen;
+  if (!req || document.fullscreenElement || document.webkitFullscreenElement) return;
+  try { const r = req.call(el, { navigationUI: 'hide' }); const lock = () => { try { screen.orientation && screen.orientation.lock && screen.orientation.lock('landscape').catch(() => { }); } catch (e) { } }; if (r && r.then) r.then(lock).catch(() => { }); else lock(); } catch (e) { }
+}
+function exitFull() { try { if (document.fullscreenElement) document.exitFullscreen().catch(() => { }); else if (document.webkitFullscreenElement) document.webkitExitFullscreen(); } catch (e) { } }
+// back in fullscreen on the next touch if the phone dropped out of it
+document.addEventListener('pointerdown', () => { if ($('#setup').hidden && $('#fsC') && $('#fsC').checked) goFull(); }, true);
 $('#launchBtn').addEventListener('click', async () => {
+  if ($('#fsC').checked) goFull();
   initAudio(); unlockVideo(); primeOpening();
   if ($('#remember').checked) {
     try { await dbPut('title', A.title); await dbPut('boot', A.boot); await dbPut('logo', A.logo); await dbPut('pics', A.pics); } catch (e) { }
@@ -378,12 +383,13 @@ function opening() {
   if (!URLS.open) return title();
   show('opening'); if (openVid.src !== URLS.open) openVid.src = URLS.open;
   try { openVid.currentTime = 0; } catch (e) { } openVid.volume = SET.vol;
-  const p = openVid.play(); if (p && p.then) p.then(() => { $('#openTap').hidden = true; }).catch(() => { $('#openTap').hidden = false; });
+  playSafe(openVid);
 }
-function endOpening() { if ($('#opening').hidden) return; openVid.pause(); $('#openTap').hidden = true; title(); }
+function endOpening() { if ($('#opening').hidden) return; openVid.pause(); title(); }
 openVid.addEventListener('ended', endOpening);
-$('#opening').addEventListener('pointerdown', e => { e.preventDefault(); if (!$('#openTap').hidden) { openVid.play().then(() => { $('#openTap').hidden = true; }).catch(() => { }); return; } endOpening(); });
-function title() { for (const id of ['bgA', 'bgB']) $('#' + id).style.display = ''; menuBg('title'); $('#titleLogo').innerHTML = logoHTML(); show('title'); startSlides(); }
+$('#opening').addEventListener('pointerdown', e => { e.preventDefault(); if (openVid.muted) { openVid.muted = false; return; } endOpening(); });
+function title() { menu(); }
+function titleScreen() { for (const id of ['bgA', 'bgB']) $('#' + id).style.display = ''; menuBg('title'); $('#titleLogo').innerHTML = logoHTML(); show('title'); startSlides(); }
 $('#title').addEventListener('click', () => { initAudio(); unlockVideo(); tone(660, .08, .2, 'square'); menu(); });
 const TILES = {
   story: [{ a: 'a', l: 'Continue', act: 'continue' }, { a: 'b', l: 'Progress', act: 'progress', stars: 3 }, { a: 'c', l: 'New Game', act: 'demo' }, { a: 'd', l: 'Replay', act: 'demo' }],
@@ -417,7 +423,7 @@ let demoT = null;
 function demo(msg) { const t = $('#demoToast'); t.textContent = msg; t.hidden = false; clearTimeout(demoT); demoT = setTimeout(() => t.hidden = true, 1600); tone(330, .12, .18, 'triangle'); }
 $('#tmGrid').addEventListener('click', e => { const b = e.target.closest('.tile'); if (!b) return; initAudio(); unlockVideo(); const i = +b.dataset.i; if (i === selI) activate(); else selectTile(i); });
 $('#tmTabs').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (b) setTab(b.dataset.tab); });
-$('#tmBack').addEventListener('click', () => { tone(300, .08, .15, 'square'); title(); });
+$('#tmBack').addEventListener('click', () => { tone(300, .08, .15, 'square'); stopSlides(); exitFull(); show('setup'); });
 $('#tmSettings').addEventListener('click', () => { tone(620, .06, .15, 'square'); $('#setModal').hidden = false; });
 $('#setClose').addEventListener('click', () => { $('#setModal').hidden = true; });
 $('#setModal').addEventListener('click', e => {
@@ -434,7 +440,7 @@ addEventListener('keydown', e => {
   if (e.code === 'ArrowLeft' || e.code === 'ArrowUp') { e.preventDefault(); selectTile(selI - 1); }
   if (e.code === 'KeyQ') setTab('story'); if (e.code === 'KeyE') setTab('online');
   if (e.code === 'Enter' || e.code === 'Space') { e.preventDefault(); activate(); }
-  if (e.code === 'Escape' || e.code === 'Backspace') title();
+  if (e.code === 'Backspace') { stopSlides(); show('setup'); }
 });
 // swipe left/right on the grid switches Story / Online
 let swX = null; $('#tmGrid').addEventListener('pointerdown', e => { swX = e.clientX; }); $('#tmGrid').addEventListener('pointerup', e => { if (swX != null && Math.abs(e.clientX - swX) > 80) setTab(e.clientX < swX ? 'online' : 'story'); swX = null; });
@@ -453,8 +459,10 @@ function unlockVideo() { // iPhones only let a video start with sound from a tap
   if (vid.src !== URLS.video) vid.src = URLS.video;
   const p = vid.play(); if (p && p.then) p.then(() => { vid.pause(); unlocked = true; }).catch(() => { });
 }
-function playVid() { vid.volume = SET.vol; const p = vid.play(); if (p && p.then) p.then(() => { $('#tapPlay').hidden = true; }).catch(() => { $('#tapPlay').hidden = false; }); }
-$('#tapPlay').addEventListener('pointerdown', e => { e.preventDefault(); playVid(); });
+// If the phone blocks sound, play muted instead of showing a tap screen; the next touch turns sound on.
+function playSafe(v) { v.muted = false; v.volume = SET.vol; const p = v.play(); if (p && p.catch) p.catch(() => { v.muted = true; v.play().catch(() => { }); }); }
+function playVid() { playSafe(vid); }
+$('#play').addEventListener('pointerdown', () => { if (vid.muted) vid.muted = false; }, true);
 let mode = 'story';
 function startPlay(m) {
   mode = m; show('play'); $('#play').classList.toggle('noctl', !SET.ctl);
@@ -531,8 +539,7 @@ function frame(now) {
   if (hornG) hornG.gain.setTargetAtTime(state.car && input.btn.horn ? .18 : 0, AC.currentTime, .02);
   if (state.wanted && Math.random() < dt * .04) state.wanted--;
   // HUD
-  $('#money').textContent = '$' + state.money.toLocaleString(); $('#hpI').style.width = state.hp + '%';
-  document.querySelectorAll('#stars span').forEach((s, k) => s.classList.toggle('on', k < state.wanted));
+  $('#money').textContent = '$' + state.money.toLocaleString();
   if (toastT > 0) { toastT -= dt; if (toastT <= 0) $('#toast').classList.remove('show'); }
   input.tap = {};
 }
