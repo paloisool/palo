@@ -1,0 +1,458 @@
+<title>Launcher Kit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Oswald:wght@500;700&display=swap">
+<style>
+/* Layout: full-screen stacked screens (setup, boot, title, menu, loading, play). The user's own images and video fill them; the chrome stays neutral so their art carries the look. Single dark look by design. */
+:root {
+  --bg: #0b0c0e;
+  --panel: rgba(12, 13, 16, .72);
+  --ink: #f1f0ec;
+  --dim: rgba(241, 240, 236, .62);
+  --line: rgba(241, 240, 236, .28);
+  --accent: #e9b949;
+  --good: #7fcf7a;
+  --bad: #d9483b;
+  --glass: rgba(12, 13, 16, .45);
+  --glass-on: rgba(241, 240, 236, .32);
+  --display: "Oswald", "Arial Narrow", Impact, sans-serif;
+  --ui: "Barlow Condensed", "Arial Narrow", system-ui, sans-serif;
+  color-scheme: dark;
+}
+[hidden] { display: none !important; }
+html, body { height: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--ui); overflow: hidden; position: fixed; inset: 0; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; touch-action: none; }
+button { font-family: inherit; }
+button:focus-visible, input:focus-visible, label:focus-within { outline: 3px solid var(--accent); outline-offset: 3px; }
+.screen { position: fixed; inset: 0; }
+.bgimg { position: absolute; inset: 0; background: #000 center/cover no-repeat; transition: opacity 1.2s; }
+.shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(0,0,0,.78) 0%, rgba(0,0,0,.35) 50%, rgba(0,0,0,.1) 100%); }
+.pad { position: absolute; inset: 0; padding: max(18px, env(safe-area-inset-top, 0px)) max(22px, env(safe-area-inset-right, 0px)) max(18px, env(safe-area-inset-bottom, 0px)) max(22px, env(safe-area-inset-left, 0px)); display: flex; flex-direction: column; }
+.logoImg { max-width: min(46vw, 420px); max-height: 32vh; object-fit: contain; filter: drop-shadow(0 6px 18px rgba(0,0,0,.6)); }
+.textLogo { font: 700 clamp(40px, 8vw, 84px)/.95 var(--display); letter-spacing: .02em; text-transform: uppercase; text-shadow: 0 4px 0 #000; text-wrap: balance; }
+
+/* setup */
+#setup { overflow: auto; touch-action: pan-y; background: radial-gradient(ellipse at 20% 0%, #23252b 0%, var(--bg) 60%); }
+.setupWrap { max-width: 760px; margin: 0 auto; padding: max(20px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) 40px max(16px, env(safe-area-inset-left, 0px)); display: grid; gap: 14px; }
+.setupWrap h1 { margin: 0; font: 700 34px/1 var(--display); letter-spacing: .03em; text-transform: uppercase; }
+.setupWrap > p { margin: 0; font: 500 17px/1.4 var(--ui); color: var(--dim); max-width: 60ch; }
+.slot { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 14px; align-items: center; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+.slot h2 { margin: 0; font: 700 17px var(--ui); letter-spacing: .1em; text-transform: uppercase; }
+.slot p { margin: 0; grid-column: 1; font: 500 15px/1.3 var(--ui); color: var(--dim); }
+.slot .state { grid-column: 1 / -1; font: 600 14px var(--ui); color: var(--good); }
+.slot .state.none { color: var(--dim); }
+.thumbs { grid-column: 1 / -1; display: flex; gap: 6px; flex-wrap: wrap; }
+.thumbs img { width: 76px; height: 44px; object-fit: cover; border-radius: 6px; }
+.pick { grid-column: 2; grid-row: 1 / span 2; font: 700 15px var(--ui); letter-spacing: .08em; text-transform: uppercase; color: var(--ink); background: rgba(241,240,236,.1); border: 2px solid var(--line); border-radius: 10px; padding: 10px 14px; cursor: pointer; }
+.pick input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.field { display: grid; gap: 6px; }
+.field input[type=text] { font: 600 18px var(--ui); color: var(--ink); background: rgba(0,0,0,.4); border: 2px solid var(--line); border-radius: 10px; padding: 10px 12px; min-width: 0; }
+.check { display: flex; gap: 10px; align-items: center; font: 600 16px var(--ui); color: var(--ink); }
+.check input { width: 22px; height: 22px; accent-color: var(--accent); }
+.go { font: 700 22px var(--display); letter-spacing: .08em; text-transform: uppercase; color: #15120a; background: var(--accent); border: 0; border-radius: 12px; padding: 14px 28px; cursor: pointer; justify-self: start; }
+.go[disabled] { opacity: .4; cursor: default; }
+.note { font: 500 14px/1.35 var(--ui); color: var(--dim); margin: 0; }
+
+/* boot */
+#boot { background: #000; display: grid; place-items: center; }
+#boot .bootInner { display: grid; place-items: center; animation: bootFade 2.6s ease both; }
+@keyframes bootFade { 0% { opacity: 0; transform: scale(.96); } 25%, 75% { opacity: 1; transform: none; } 100% { opacity: 0; } }
+
+/* title */
+.press { margin-top: auto; align-self: center; font: 700 20px var(--ui); letter-spacing: .35em; text-transform: uppercase; animation: pulse 1.6s ease-in-out infinite; text-shadow: 0 2px 6px #000; }
+@keyframes pulse { 50% { opacity: .3; } }
+
+/* menu */
+.menuList { margin-top: auto; display: grid; gap: 2px; justify-items: start; }
+.mi { font: 700 clamp(24px, 4.6vh, 38px)/1.15 var(--display); letter-spacing: .04em; text-transform: uppercase; color: var(--dim); background: none; border: 0; padding: 2px 0; cursor: pointer; text-shadow: 0 2px 8px #000; transition: color .15s, transform .15s; }
+.mi:hover, .mi.sel { color: var(--ink); transform: translateX(8px); }
+.mi.sel::before { content: ""; display: inline-block; width: 10px; height: 10px; background: var(--accent); margin-right: 12px; vertical-align: middle; }
+.menuTop { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.menuTop .logoImg { max-height: 22vh; max-width: 34vw; }
+.menuTop .textLogo { font-size: clamp(28px, 5vw, 52px); }
+.foot { margin-top: 14px; font: 600 13px var(--ui); letter-spacing: .14em; text-transform: uppercase; color: var(--dim); }
+.setPanel { position: absolute; right: max(22px, env(safe-area-inset-right, 0px)); bottom: max(18px, env(safe-area-inset-bottom, 0px)); width: min(360px, 52vw); background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; display: grid; gap: 10px; touch-action: auto; }
+.setPanel h3 { margin: 0; font: 700 15px var(--ui); letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+.setRow { display: flex; justify-content: space-between; align-items: center; gap: 10px; font: 600 15px var(--ui); }
+.setRow input[type=range] { width: 50%; accent-color: var(--accent); }
+.setRow input[type=checkbox] { width: 20px; height: 20px; accent-color: var(--accent); }
+
+/* loading */
+.loadBar { position: absolute; left: max(22px, env(safe-area-inset-left, 0px)); right: max(22px, env(safe-area-inset-right, 0px)); bottom: max(18px, env(safe-area-inset-bottom, 0px)); display: grid; gap: 8px; }
+.loadBar .tip { font: 600 17px/1.3 var(--ui); text-shadow: 0 2px 6px #000; max-width: 60ch; }
+.bar { height: 5px; background: rgba(255,255,255,.18); border-radius: 3px; overflow: hidden; }
+.bar i { display: block; height: 100%; width: 0; background: var(--ink); }
+.spinner { position: absolute; right: max(22px, env(safe-area-inset-right, 0px)); top: max(18px, env(safe-area-inset-top, 0px)); width: 26px; height: 26px; border: 3px solid rgba(255,255,255,.25); border-top-color: var(--ink); border-radius: 50%; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* play */
+#play { background: #000; overflow: hidden; }
+#vid { position: absolute; inset: -6%; width: 112%; height: 112%; object-fit: cover; }
+#tapPlay { position: absolute; inset: 0; display: grid; place-items: center; font: 700 28px var(--display); letter-spacing: .08em; text-transform: uppercase; background: rgba(0,0,0,.5); z-index: 6; }
+#touch { position: absolute; inset: 0; z-index: 2; }
+.hud { position: absolute; z-index: 3; pointer-events: none; text-shadow: 0 2px 0 rgba(0,0,0,.7); }
+#radar { top: calc(env(safe-area-inset-top, 0px) + 12px); left: calc(env(safe-area-inset-left, 0px) + 12px); width: 118px; height: 118px; border-radius: 50%; }
+#stats { top: calc(env(safe-area-inset-top, 0px) + 10px); right: calc(env(safe-area-inset-right, 0px) + 14px); display: grid; justify-items: end; gap: 3px; font-variant-numeric: tabular-nums; }
+#money { font: 700 28px/1 var(--display); color: var(--good); letter-spacing: .03em; }
+.hp { width: 120px; height: 8px; background: rgba(0,0,0,.6); }
+.hp i { display: block; height: 100%; background: var(--bad); width: 100%; transition: width .2s; }
+#stars { font-size: 20px; letter-spacing: 1px; }
+#stars span { color: rgba(0,0,0,.4); -webkit-text-stroke: 1px rgba(255,255,255,.5); }
+#stars span.on { color: var(--accent); -webkit-text-stroke: 1px #5a4300; }
+#speedo { bottom: calc(env(safe-area-inset-bottom, 0px) + 16px); left: 50%; transform: translateX(-50%); font: 600 15px var(--ui); color: var(--dim); letter-spacing: .1em; }
+#speedo b { font-size: 24px; color: var(--ink); }
+#toast { bottom: calc(env(safe-area-inset-bottom, 0px) + 140px); left: 50%; transform: translateX(-50%); font: 700 18px var(--ui); text-align: center; opacity: 0; transition: opacity .3s; max-width: 70vw; }
+#toast.show { opacity: 1; }
+#flash { position: absolute; inset: 0; z-index: 4; pointer-events: none; opacity: 0; transition: opacity .15s; }
+#pauseBtn { position: absolute; z-index: 5; top: calc(env(safe-area-inset-top, 0px) + 12px); left: 50%; transform: translateX(-50%); width: 42px; height: 32px; color: var(--ink); background: var(--glass); border: 2px solid var(--line); border-radius: 8px; font: 700 14px var(--ui); }
+#joyBase { position: absolute; z-index: 3; width: 124px; height: 124px; margin: -62px 0 0 -62px; border-radius: 50%; border: 2px solid rgba(255,255,255,.4); background: rgba(0,0,0,.25); pointer-events: none; }
+#joyKnob { position: absolute; left: 50%; top: 50%; width: 56px; height: 56px; margin: -28px 0 0 -28px; border-radius: 50%; background: rgba(255,255,255,.45); border: 2px solid rgba(255,255,255,.8); }
+.btn { position: absolute; z-index: 4; display: grid; place-items: center; border-radius: 50%; background: var(--glass); border: 2px solid rgba(255,255,255,.55); color: var(--ink); font: 700 12px/1 var(--ui); letter-spacing: .1em; text-transform: uppercase; touch-action: none; box-shadow: 0 3px 10px rgba(0,0,0,.35); text-shadow: 0 1px 2px #000; }
+.btn.on { background: var(--glass-on); transform: scale(.94); }
+.btn svg { width: 44%; height: 44%; fill: none; stroke: var(--ink); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.btn .l { position: absolute; bottom: 13%; font-size: 10px; }
+.pedal { border-radius: 16px; }
+#play.car .foot, #play:not(.car) .drive { display: none; }
+#play.noctl .btn, #play.noctl #joyBase, #play.noctl .hud { display: none; }
+#bA { width: 86px; height: 86px; right: calc(env(safe-area-inset-right, 0px) + 22px); bottom: calc(env(safe-area-inset-bottom, 0px) + 26px); }
+#bJ { width: 60px; height: 60px; right: calc(env(safe-area-inset-right, 0px) + 122px); bottom: calc(env(safe-area-inset-bottom, 0px) + 20px); }
+#bR { width: 60px; height: 60px; right: calc(env(safe-area-inset-right, 0px) + 34px); bottom: calc(env(safe-area-inset-bottom, 0px) + 126px); }
+#bC { width: 56px; height: 56px; right: calc(env(safe-area-inset-right, 0px) + 126px); bottom: calc(env(safe-area-inset-bottom, 0px) + 100px); }
+#bW { width: 50px; height: 50px; right: calc(env(safe-area-inset-right, 0px) + 112px); bottom: calc(env(safe-area-inset-bottom, 0px) + 172px); }
+#bG { width: 82px; height: 102px; right: calc(env(safe-area-inset-right, 0px) + 22px); bottom: calc(env(safe-area-inset-bottom, 0px) + 22px); }
+#bB { width: 76px; height: 76px; right: calc(env(safe-area-inset-right, 0px) + 118px); bottom: calc(env(safe-area-inset-bottom, 0px) + 22px); }
+#bD { width: 56px; height: 56px; right: calc(env(safe-area-inset-right, 0px) + 34px); bottom: calc(env(safe-area-inset-bottom, 0px) + 140px); }
+#bH { width: 50px; height: 50px; right: calc(env(safe-area-inset-right, 0px) + 128px); bottom: calc(env(safe-area-inset-bottom, 0px) + 114px); }
+#bX { width: 50px; height: 50px; right: calc(env(safe-area-inset-right, 0px) + 110px); bottom: calc(env(safe-area-inset-bottom, 0px) + 180px); }
+#pause { z-index: 20; background: rgba(0,0,0,.78); }
+.rotate { font: 700 14px var(--ui); letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+@media (orientation: landscape) { .rotate { display: none; } }
+@media (prefers-reduced-motion: reduce) { .press, #boot .bootInner { animation: none; } }
+</style>
+
+<!-- SETUP: the player loads their own art and video -->
+<section id="setup" class="screen">
+  <div class="setupWrap">
+    <h1>Launcher Kit</h1>
+    <p>Load your own logos, pictures and videos. When you launch, it plays: boot logo, opening video, title screen, menu, loading screen, then your gameplay video with touch controls on top. Everything stays on this device. Nothing is uploaded.</p>
+    <label class="field" for="titleIn"><span class="note">Game name (shown if you don't add a logo)</span><input id="titleIn" type="text" value="My Game" maxlength="40"></label>
+    <div class="slot"><h2>Boot logo</h2><p>Shows first, on black, when the app opens. Optional.</p><label class="pick">Choose<input id="fBoot" type="file" accept="image/*"></label><div class="state none" id="sBoot">No boot logo yet</div><div class="thumbs" id="tBoot"></div></div>
+    <div class="slot"><h2>Opening video</h2><p>Plays full screen right after the boot logo, as the loading screen before the menu. Tap to skip. Optional.</p><label class="pick">Choose<input id="fOpen" type="file" accept="video/*"></label><div class="state none" id="sOpen">No opening video yet</div></div>
+    <div class="slot"><h2>Game logo</h2><p>Shown on the title screen and menu. A PNG with a transparent background looks best.</p><label class="pick">Choose<input id="fLogo" type="file" accept="image/*"></label><div class="state none" id="sLogo">No logo yet</div><div class="thumbs" id="tLogo"></div></div>
+    <div class="slot"><h2>Pictures</h2><p>Pick several. They rotate behind the title, menu and loading screens.</p><label class="pick">Choose<input id="fPics" type="file" accept="image/*" multiple></label><div class="state none" id="sPics">No pictures yet</div><div class="thumbs" id="tPics"></div></div>
+    <div class="slot"><h2>Gameplay video</h2><p>The video that plays when you start the game. Required.</p><label class="pick">Choose<input id="fVid" type="file" accept="video/*"></label><div class="state none" id="sVid">No video yet</div></div>
+    <label class="check" for="remember"><input id="remember" type="checkbox" checked>Remember these on this phone</label>
+    <p class="note" id="saveNote">Big videos might not fit in the phone's browser storage. If they don't, you'll pick the video again next time.</p>
+    <button class="go" id="launchBtn" disabled>Launch</button>
+    <div class="rotate">Turn your phone sideways for the best view</div>
+  </div>
+</section>
+
+<section id="boot" class="screen" hidden><div class="bootInner" id="bootInner"></div></section>
+<section id="opening" class="screen" hidden style="background:#000"><video id="openVid" playsinline webkit-playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"></video><div class="foot" id="skipNote" style="position:absolute;right:max(18px,env(safe-area-inset-right,0px));bottom:max(14px,env(safe-area-inset-bottom,0px));text-shadow:0 2px 4px #000">Tap to skip</div><div id="openTap" hidden style="position:absolute;inset:0;display:grid;place-items:center;font:700 26px var(--display);letter-spacing:.08em;text-transform:uppercase;background:rgba(0,0,0,.5)">Tap to play</div></section>
+
+<section id="title" class="screen" hidden>
+  <div class="bgimg" id="bgA"></div><div class="bgimg" id="bgB" style="opacity:0"></div><div class="shade"></div>
+  <div class="pad"><div id="titleLogo"></div><div class="press">Tap to start</div></div>
+</section>
+
+<section id="menu" class="screen" hidden>
+  <div class="pad">
+    <div class="menuTop"><div id="menuLogo"></div></div>
+    <nav class="menuList" id="menuList" aria-label="Main menu">
+      <button class="mi sel" data-act="story">Story mode</button>
+      <button class="mi" data-act="free">Free roam</button>
+      <button class="mi" data-act="settings">Settings</button>
+      <button class="mi" data-act="assets">Change pictures &amp; video</button>
+    </nav>
+    <div class="foot" id="menuFoot">Tap an option</div>
+  </div>
+  <div class="setPanel" id="setPanel" hidden>
+    <h3>Settings</h3>
+    <label class="setRow" for="volR">Video volume<input id="volR" type="range" min="0" max="1" step="0.05" value="1"></label>
+    <label class="setRow" for="fxR">Effects volume<input id="fxR" type="range" min="0" max="1" step="0.05" value="0.6"></label>
+    <label class="setRow" for="ctlC">Show touch controls<input id="ctlC" type="checkbox" checked></label>
+    <label class="setRow" for="loadR">Loading screen length<input id="loadR" type="range" min="1" max="10" step="1" value="4"></label>
+  </div>
+</section>
+
+<section id="loading" class="screen" hidden>
+  <div class="bgimg" id="ldA"></div><div class="shade" style="background:linear-gradient(0deg,rgba(0,0,0,.75),rgba(0,0,0,0) 45%)"></div>
+  <div class="spinner"></div>
+  <div class="loadBar"><div class="tip" id="tip"></div><div class="bar"><i id="barI"></i></div></div>
+</section>
+
+<section id="play" class="screen" hidden>
+  <video id="vid" playsinline webkit-playsinline loop></video>
+  <div id="touch"></div>
+  <canvas id="radar" class="hud" width="236" height="236"></canvas>
+  <div id="stats" class="hud"><div id="money">$0</div><div class="hp"><i id="hpI"></i></div><div id="stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div></div>
+  <div id="speedo" class="hud drive"><b>0</b> km/h</div>
+  <div id="toast" class="hud"></div>
+  <div id="flash"></div>
+  <button id="pauseBtn" aria-label="Pause">II</button>
+  <div id="joyBase" hidden><div id="joyKnob"></div></div>
+  <div class="btn foot" id="bA" data-b="attack"><svg viewBox="0 0 24 24"><path d="M7 11V7.5a1.5 1.5 0 0 1 3 0V10m0-3V6a1.5 1.5 0 0 1 3 0v4m0-3.5a1.5 1.5 0 0 1 3 0V10m0-2a1.5 1.5 0 0 1 3 0v5c0 4-2.5 7-6.5 7S7 17.5 7 14v-3"/></svg><span class="l" id="aL">Punch</span></div>
+  <div class="btn foot" id="bJ" data-b="jump"><svg viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></svg><span class="l">Jump</span></div>
+  <div class="btn foot" id="bR" data-b="run"><svg viewBox="0 0 24 24"><path d="M5 7l6 5-6 5M12 7l6 5-6 5"/></svg><span class="l">Run</span></div>
+  <div class="btn foot" id="bC" data-b="car"><svg viewBox="0 0 24 24"><path d="M4 15v-3l2-5h12l2 5v3zM4 15v3h3v-3M17 15v3h3v-3M6 12h12"/></svg><span class="l">Car</span></div>
+  <div class="btn foot" id="bW" data-b="weapon"><svg viewBox="0 0 24 24"><path d="M3 9h14l2 2v2H9l-1 5H5l1-5H3z"/></svg></div>
+  <div class="btn pedal drive" id="bG" data-b="gas"><svg viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></svg><span class="l">Gas</span></div>
+  <div class="btn pedal drive" id="bB" data-b="brake"><svg viewBox="0 0 24 24"><path d="M12 5v14M6 13l6 6 6-6"/></svg><span class="l">Brake</span></div>
+  <div class="btn drive" id="bD" data-b="drift"><svg viewBox="0 0 24 24"><path d="M6 18c0-6 4-10 12-10M14 4l4 4-4 4"/></svg><span class="l">Drift</span></div>
+  <div class="btn drive" id="bH" data-b="horn"><svg viewBox="0 0 24 24"><path d="M4 10v4h3l5 4V6L7 10zM16 9a4 4 0 0 1 0 6"/></svg></div>
+  <div class="btn drive" id="bX" data-b="car"><svg viewBox="0 0 24 24"><path d="M14 4h5v16h-5M10 8l-4 4 4 4M6 12h10"/></svg></div>
+  <div id="tapPlay" hidden>Tap to play</div>
+</section>
+
+<section id="pause" class="screen" hidden>
+  <div class="pad">
+    <div id="pauseLogo"></div>
+    <nav class="menuList" aria-label="Pause menu">
+      <button class="mi sel" id="pResume">Resume</button>
+      <button class="mi" id="pRestart">Restart video</button>
+      <button class="mi" id="pQuit">Quit to menu</button>
+    </nav>
+  </div>
+</section>
+
+<script>
+(() => {
+'use strict';
+const $ = s => document.querySelector(s);
+const clamp = (v, a, b) => v < a ? a : v > b ? b : v, lerp = (a, b, t) => a + (b - a) * t, rnd = (a, b) => a + Math.random() * (b - a);
+const A = { title: 'My Game', boot: null, open: null, logo: null, pics: [], video: null }; // Blobs
+const URLS = { boot: null, open: null, logo: null, pics: [], video: null };
+const SET = { vol: 1, fx: .6, ctl: true, load: 4 };
+try { Object.assign(SET, JSON.parse(localStorage.getItem('lk_set') || '{}')); } catch (e) { }
+const saveSet = () => { try { localStorage.setItem('lk_set', JSON.stringify(SET)); } catch (e) { } };
+
+// ---------- IndexedDB (optional, per device) ----------
+function db() { return new Promise((res, rej) => { try { const r = indexedDB.open('launcherKit', 1); r.onupgradeneeded = () => r.result.createObjectStore('a'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); } catch (e) { rej(e); } }); }
+async function dbPut(k, v) { const d = await db(); return new Promise((res, rej) => { const t = d.transaction('a', 'readwrite'); t.objectStore('a').put(v, k); t.oncomplete = res; t.onerror = () => rej(t.error); t.onabort = () => rej(t.error); }); }
+async function dbGet(k) { const d = await db(); return new Promise((res, rej) => { const r = d.transaction('a').objectStore('a').get(k); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }); }
+async function dbClear() { const d = await db(); return new Promise(res => { const t = d.transaction('a', 'readwrite'); t.objectStore('a').clear(); t.oncomplete = res; t.onerror = res; }); }
+
+// ---------- setup ----------
+function setURL(kind, blob) { if (URLS[kind]) URL.revokeObjectURL(URLS[kind]); URLS[kind] = blob ? URL.createObjectURL(blob) : null; }
+function refreshSetup() {
+  $('#titleIn').value = A.title;
+  $('#sBoot').textContent = A.boot ? 'Boot logo loaded' : 'No boot logo yet'; $('#sBoot').classList.toggle('none', !A.boot);
+  $('#tBoot').innerHTML = URLS.boot ? `<img src="${URLS.boot}" alt="Your boot logo" style="object-fit:contain;background:#222">` : '';
+  $('#sOpen').textContent = A.open ? `Opening video loaded · ${(A.open.size / 1048576).toFixed(0)} MB` : 'No opening video yet'; $('#sOpen').classList.toggle('none', !A.open);
+  $('#sLogo').textContent = A.logo ? 'Logo loaded' : 'No logo yet'; $('#sLogo').classList.toggle('none', !A.logo);
+  $('#tLogo').innerHTML = URLS.logo ? `<img src="${URLS.logo}" alt="Your logo" style="object-fit:contain;background:#222">` : '';
+  $('#sPics').textContent = A.pics.length ? `${A.pics.length} picture${A.pics.length > 1 ? 's' : ''} loaded` : 'No pictures yet'; $('#sPics').classList.toggle('none', !A.pics.length);
+  $('#tPics').innerHTML = URLS.pics.map(u => `<img src="${u}" alt="">`).join('');
+  $('#sVid').textContent = A.video ? `Video loaded · ${(A.video.size / 1048576).toFixed(0)} MB` : 'No video yet'; $('#sVid').classList.toggle('none', !A.video);
+  $('#launchBtn').disabled = !A.video;
+}
+$('#fBoot').addEventListener('change', e => { const f = e.target.files[0]; if (!f) return; A.boot = f; setURL('boot', f); refreshSetup(); });
+$('#fOpen').addEventListener('change', e => { const f = e.target.files[0]; if (!f) return; A.open = f; setURL('open', f); refreshSetup(); });
+$('#fLogo').addEventListener('change', e => { const f = e.target.files[0]; if (!f) return; A.logo = f; setURL('logo', f); refreshSetup(); });
+$('#fPics').addEventListener('change', e => { const fs = [...e.target.files]; if (!fs.length) return; URLS.pics.forEach(u => URL.revokeObjectURL(u)); A.pics = fs; URLS.pics = fs.map(f => URL.createObjectURL(f)); refreshSetup(); });
+$('#fVid').addEventListener('change', e => { const f = e.target.files[0]; if (!f) return; A.video = f; setURL('video', f); refreshSetup(); });
+$('#titleIn').addEventListener('input', e => { A.title = e.target.value || 'My Game'; });
+$('#launchBtn').addEventListener('click', async () => {
+  initAudio(); unlockVideo(); primeOpening();
+  if ($('#remember').checked) {
+    try { await dbPut('title', A.title); await dbPut('boot', A.boot); await dbPut('logo', A.logo); await dbPut('pics', A.pics); } catch (e) { }
+    try { await dbPut('open', A.open); } catch (e) { }
+    try { await dbPut('video', A.video); $('#saveNote').textContent = 'Saved on this phone.'; } catch (e) { $('#saveNote').textContent = 'The video was too big to save. Pictures and logo are saved.'; }
+  } else { try { await dbClear(); } catch (e) { } }
+  boot();
+});
+(async function restore() {
+  try {
+    const [t, l, p, v, bt, op] = await Promise.all([dbGet('title'), dbGet('logo'), dbGet('pics'), dbGet('video'), dbGet('boot'), dbGet('open')]);
+    if (bt) { A.boot = bt; setURL('boot', bt); } if (op) { A.open = op; setURL('open', op); }
+    if (t) A.title = t; if (l) { A.logo = l; setURL('logo', l); } if (p && p.length) { A.pics = p; URLS.pics = p.map(b => URL.createObjectURL(b)); } if (v) { A.video = v; setURL('video', v); }
+  } catch (e) { }
+  refreshSetup();
+})();
+
+// ---------- shared art ----------
+function logoHTML() { return URLS.logo ? `<img class="logoImg" src="${URLS.logo}" alt="${esc(A.title)}">` : `<div class="textLogo">${esc(A.title)}</div>`; }
+function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]); }
+let picI = 0, slideT = null;
+function picURL(i) { return URLS.pics.length ? URLS.pics[((i % URLS.pics.length) + URLS.pics.length) % URLS.pics.length] : null; }
+function setBg(el, u) { el.style.backgroundImage = u ? `url("${u}")` : 'linear-gradient(135deg,#1d2026,#0b0c0e)'; }
+function startSlides() {
+  stopSlides(); const a = $('#bgA'), b = $('#bgB'); let front = a;
+  setBg(a, picURL(picI)); a.style.opacity = 1; b.style.opacity = 0;
+  if (URLS.pics.length < 2) return;
+  slideT = setInterval(() => { picI++; const back = front === a ? b : a; setBg(back, picURL(picI)); back.style.opacity = 1; front.style.opacity = 0; front = back; }, 6000);
+}
+function stopSlides() { if (slideT) clearInterval(slideT); slideT = null; }
+function show(id) { for (const s of ['setup', 'boot', 'opening', 'title', 'menu', 'loading', 'play', 'pause']) $('#' + s).hidden = s !== id; }
+function menuBg(onEl) { // title and menu share the slideshow layers
+  const host = $('#' + onEl); for (const id of ['bgA', 'bgB']) { const el = $('#' + id); if (el.parentElement !== host) host.insertBefore(el, host.firstChild); }
+  if (!host.querySelector('.shade')) { const sh = document.createElement('div'); sh.className = 'shade'; host.insertBefore(sh, $('#bgB').nextSibling); }
+}
+
+// ---------- flow ----------
+function boot() {
+  show('boot'); $('#bootInner').innerHTML = URLS.boot ? `<img class="logoImg" src="${URLS.boot}" alt="">` : logoHTML();
+  if (!A.open) { tone(196, .9, .2, 'sine'); setTimeout(() => tone(294, 1.2, .15, 'sine'), 300); }
+  setTimeout(opening, 2700);
+}
+const openVid = $('#openVid');
+function primeOpening() { if (!URLS.open) return; if (openVid.src !== URLS.open) openVid.src = URLS.open; const p = openVid.play(); if (p && p.then) p.then(() => openVid.pause()).catch(() => { }); }
+function opening() {
+  if (!URLS.open) return title();
+  show('opening'); if (openVid.src !== URLS.open) openVid.src = URLS.open;
+  try { openVid.currentTime = 0; } catch (e) { } openVid.volume = SET.vol;
+  const p = openVid.play(); if (p && p.then) p.then(() => { $('#openTap').hidden = true; }).catch(() => { $('#openTap').hidden = false; });
+}
+function endOpening() { if ($('#opening').hidden) return; openVid.pause(); $('#openTap').hidden = true; title(); }
+openVid.addEventListener('ended', endOpening);
+$('#opening').addEventListener('pointerdown', e => { e.preventDefault(); if (!$('#openTap').hidden) { openVid.play().then(() => { $('#openTap').hidden = true; }).catch(() => { }); return; } endOpening(); });
+function title() { menuBg('title'); $('#titleLogo').innerHTML = logoHTML(); show('title'); startSlides(); }
+$('#title').addEventListener('click', () => { initAudio(); unlockVideo(); tone(660, .08, .2, 'square'); menu(); });
+function menu() { menuBg('menu'); $('#menuLogo').innerHTML = logoHTML(); $('#pauseLogo').innerHTML = logoHTML(); show('menu'); $('#setPanel').hidden = true; startSlides(); }
+$('#menuList').addEventListener('click', e => {
+  const b = e.target.closest('[data-act]'); if (!b) return; initAudio(); unlockVideo();
+  document.querySelectorAll('#menuList .mi').forEach(m => m.classList.toggle('sel', m === b)); tone(520, .06, .15, 'square');
+  const act = b.dataset.act;
+  if (act === 'settings') { $('#setPanel').hidden = !$('#setPanel').hidden; return; }
+  $('#setPanel').hidden = true;
+  if (act === 'assets') { stopSlides(); show('setup'); return; }
+  load(act);
+});
+const TIPS = ['Push the stick all the way to run. Hold Run to sprint.', 'Gas speeds the footage up. Brake slows it down.', 'Drift gives the camera a lean. Tap Car to switch between walking and driving buttons.', 'Drag on the right side of the screen to look around.', 'Tap the pause button to restart the video or go back to the menu.'];
+function load(mode) {
+  stopSlides(); show('loading'); setBg($('#ldA'), picURL(picI + 1)); $('#tip').textContent = TIPS[Math.floor(Math.random() * TIPS.length)];
+  const bar = $('#barI'); bar.style.transition = 'none'; bar.style.width = '0'; void bar.offsetWidth; bar.style.transition = `width ${SET.load}s cubic-bezier(.25,.6,.35,1)`; bar.style.width = '100%';
+  setTimeout(() => startPlay(mode), SET.load * 1000 + 200);
+}
+
+// ---------- video ----------
+const vid = $('#vid');
+let unlocked = false;
+function unlockVideo() { // iPhones only let a video start with sound from a tap, so prime it on taps
+  if (unlocked || !URLS.video) return;
+  if (vid.src !== URLS.video) vid.src = URLS.video;
+  const p = vid.play(); if (p && p.then) p.then(() => { vid.pause(); unlocked = true; }).catch(() => { });
+}
+function playVid() { vid.volume = SET.vol; const p = vid.play(); if (p && p.then) p.then(() => { $('#tapPlay').hidden = true; }).catch(() => { $('#tapPlay').hidden = false; }); }
+$('#tapPlay').addEventListener('pointerdown', e => { e.preventDefault(); playVid(); });
+let mode = 'story';
+function startPlay(m) {
+  mode = m; show('play'); $('#play').classList.toggle('noctl', !SET.ctl);
+  if (vid.src !== URLS.video) vid.src = URLS.video;
+  const go = () => { try { vid.currentTime = m === 'free' && isFinite(vid.duration) ? rnd(0, vid.duration * .8) : 0; } catch (e) { } playVid(); };
+  if (vid.readyState >= 1) go(); else vid.addEventListener('loadedmetadata', go, { once: true });
+  state.t = 0; state.hp = 100; state.wanted = 0; last = performance.now(); paused = false; toast(m === 'free' ? 'Free roam' : 'Story mode', 2);
+}
+
+// ---------- input ----------
+const input = { jx: 0, jy: 0, btn: {}, tap: {} }, joy = { id: null, cx: 0, cy: 0, x: 0, y: 0 }, look = { id: null, lx: 0, ly: 0 };
+let yaw = 0, pitch = 0;
+const touch = $('#touch'), base = $('#joyBase'), knob = $('#joyKnob');
+touch.addEventListener('pointerdown', e => {
+  e.preventDefault(); initAudio();
+  if (e.clientX < innerWidth * .45 && joy.id === null && e.pointerType !== 'mouse') { joy.id = e.pointerId; joy.cx = clamp(e.clientX, 80, innerWidth * .45); joy.cy = clamp(e.clientY, 80, innerHeight - 70); base.style.left = joy.cx + 'px'; base.style.top = joy.cy + 'px'; base.hidden = false; knob.style.transform = ''; }
+  else if (look.id === null) { look.id = e.pointerId; look.lx = e.clientX; look.ly = e.clientY; }
+  try { touch.setPointerCapture(e.pointerId); } catch (er) { }
+});
+touch.addEventListener('pointermove', e => {
+  if (e.pointerId === joy.id) { let dx = e.clientX - joy.cx, dy = e.clientY - joy.cy; const d = Math.hypot(dx, dy), M = 50; if (d > M) { dx *= M / d; dy *= M / d; } joy.x = dx / M; joy.y = -dy / M; knob.style.transform = `translate(${dx}px,${dy}px)`; }
+  else if (e.pointerId === look.id) { yaw = clamp(yaw + (e.clientX - look.lx) * .02, -5, 5); pitch = clamp(pitch + (e.clientY - look.ly) * .02, -3, 3); look.lx = e.clientX; look.ly = e.clientY; }
+});
+const endP = e => { if (e.pointerId === joy.id) { joy.id = null; joy.x = joy.y = 0; base.hidden = true; } if (e.pointerId === look.id) look.id = null; };
+touch.addEventListener('pointerup', endP); touch.addEventListener('pointercancel', endP);
+document.querySelectorAll('[data-b]').forEach(el => {
+  const n = el.dataset.b;
+  el.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); initAudio(); input.btn[n] = true; input.tap[n] = true; el.classList.add('on'); try { el.setPointerCapture(e.pointerId); } catch (er) { } });
+  const up = () => { input.btn[n] = false; el.classList.remove('on'); };
+  el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up); el.addEventListener('lostpointercapture', up);
+});
+const keys = {}, KM = { KeyF: 'car', Space: 'jump', ShiftLeft: 'run', KeyJ: 'attack', KeyQ: 'weapon', KeyH: 'horn', KeyW: 'gas', KeyS: 'brake' };
+addEventListener('keydown', e => { if (e.repeat) return; keys[e.code] = true; const b = KM[e.code]; if (b) { input.btn[b] = true; input.tap[b] = true; } if (e.code === 'Escape' && !$('#play').hidden) setPause(true); });
+addEventListener('keyup', e => { keys[e.code] = false; const b = KM[e.code]; if (b) input.btn[b] = false; });
+document.addEventListener('gesturestart', e => e.preventDefault());
+
+// ---------- audio fx ----------
+let AC = null, fxGain, noiseBuf, hornG;
+function initAudio() {
+  if (AC) { if (AC.state === 'suspended') AC.resume(); return; }
+  try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return; }
+  fxGain = AC.createGain(); fxGain.gain.value = SET.fx; fxGain.connect(AC.destination);
+  noiseBuf = AC.createBuffer(1, AC.sampleRate, AC.sampleRate); const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  hornG = AC.createGain(); hornG.gain.value = 0; for (const f of [392, 494]) { const o = AC.createOscillator(); o.type = 'square'; o.frequency.value = f; o.connect(hornG); o.start(); } const hf = AC.createBiquadFilter(); hf.type = 'lowpass'; hf.frequency.value = 1400; hornG.disconnect(); hornG.connect(hf); hf.connect(fxGain);
+}
+function tone(f, dur, v, type = 'sine', to) { if (!AC) return; const o = AC.createOscillator(), g = AC.createGain(), t = AC.currentTime; o.type = type; o.frequency.setValueAtTime(f, t); if (to) o.frequency.exponentialRampToValueAtTime(to, t + dur); g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(.001, t + dur); o.connect(g); g.connect(fxGain); o.start(t); o.stop(t + dur + .05); }
+function noise(dur, f, v) { if (!AC) return; const s = AC.createBufferSource(), fl = AC.createBiquadFilter(), g = AC.createGain(), t = AC.currentTime; s.buffer = noiseBuf; fl.type = 'bandpass'; fl.frequency.value = f; g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(.001, t + dur); s.connect(fl); fl.connect(g); g.connect(fxGain); s.start(t); s.stop(t + dur + .05); }
+
+// ---------- play loop ----------
+const state = { car: false, weapon: 0, t: 0, hp: 100, wanted: 0, money: 0, panX: 0, panY: 0, rot: 0, shake: 0, sweep: 0 };
+try { state.money = +localStorage.getItem('lk_money') || 0; } catch (e) { }
+let last = performance.now(), paused = false, toastT = 0;
+function toast(t, d = 2.5) { $('#toast').textContent = t; $('#toast').classList.add('show'); toastT = d; }
+function flash(c, o) { const f = $('#flash'); f.style.background = c; f.style.opacity = o; setTimeout(() => f.style.opacity = 0, 70); }
+const rc = $('#radar'), rg = rc.getContext('2d');
+function radar(dt) {
+  const W = rc.width, C = W / 2; state.sweep += dt * 2;
+  rg.clearRect(0, 0, W, W); rg.save(); rg.beginPath(); rg.arc(C, C, C - 2, 0, 7); rg.clip();
+  rg.fillStyle = 'rgba(20,28,24,.82)'; rg.fillRect(0, 0, W, W);
+  rg.translate(C, C); rg.rotate(-yaw * .05);
+  rg.strokeStyle = 'rgba(160,170,160,.35)'; rg.lineWidth = 10; // a road grid that drifts with the footage
+  const off = (state.t * (state.car ? 14 : 4)) % 60;
+  for (let k = -3; k <= 3; k++) { rg.beginPath(); rg.moveTo(k * 60, -C * 1.5); rg.lineTo(k * 60, C * 1.5); rg.stroke(); rg.beginPath(); rg.moveTo(-C * 1.5, k * 60 + off); rg.lineTo(C * 1.5, k * 60 + off); rg.stroke(); }
+  rg.restore();
+  rg.fillStyle = '#f1f0ec'; rg.strokeStyle = '#000'; rg.lineWidth = 2; rg.beginPath(); rg.moveTo(C, C - 11); rg.lineTo(C + 8, C + 9); rg.lineTo(C, C + 4); rg.lineTo(C - 8, C + 9); rg.closePath(); rg.fill(); rg.stroke();
+  rg.strokeStyle = 'rgba(241,240,236,.75)'; rg.lineWidth = 4; rg.beginPath(); rg.arc(C, C, C - 2, 0, 7); rg.stroke();
+}
+function frame(now) {
+  requestAnimationFrame(frame);
+  const dt = Math.min(.05, (now - last) / 1000); last = now;
+  if ($('#play').hidden || paused) { input.tap = {}; return; }
+  state.t += dt;
+  const kx = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0), ky = (keys.ArrowUp ? 1 : 0) - (keys.ArrowDown ? 1 : 0);
+  input.jx = Math.abs(kx) > Math.abs(joy.x) ? kx : joy.x; input.jy = Math.abs(ky) > Math.abs(joy.y) ? ky : joy.y;
+  if (input.tap.car) { state.car = !state.car; $('#play').classList.toggle('car', state.car); tone(220, .06, .3, 'square', 120); noise(.05, 2000, .2); }
+  if (input.tap.weapon) { state.weapon = 1 - state.weapon; $('#aL').textContent = state.weapon ? 'Shoot' : 'Punch'; tone(900, .05, .15, 'square'); }
+  if (input.tap.attack) {
+    if (state.weapon) { noise(.22, 1800, .8); tone(140, .14, .45, 'square', 40); flash('#ffd27a', .22); state.shake = .9; if (Math.random() < .25) { state.wanted = Math.min(6, state.wanted + 1); tone(520, .1, .2, 'triangle'); } }
+    else { tone(110, .12, .55, 'sine', 50); noise(.08, 900, .3); state.shake = .45; if (Math.random() < .3) { state.money += Math.floor(rnd(5, 40)); } }
+  }
+  if (input.tap.jump && !state.car) { state.shake = .4; tone(300, .15, .2, 'sine', 520); }
+  // playback speed follows the pedals and run
+  let rate = 1;
+  if (state.car) { if (input.btn.gas || input.jy > .4) rate = 1.6; if (input.btn.brake || input.jy < -.4) rate = .45; if (input.btn.drift) rate = .8; }
+  else if (input.btn.run) rate = 1.5;
+  if (Math.abs(vid.playbackRate - rate) > .02) { try { vid.playbackRate = lerp(vid.playbackRate, rate, Math.min(1, dt * 4)); } catch (e) { } }
+  $('#speedo b').textContent = Math.round(vid.playbackRate * 60);
+  // camera feel: stick and look drag pan and lean the picture
+  state.panX = lerp(state.panX, -input.jx * 3.5 - yaw * .8, dt * 5); state.panY = lerp(state.panY, -pitch * .8 + (state.car ? 0 : -input.jy * 1.2), dt * 5);
+  state.rot = lerp(state.rot, state.car ? input.jx * 2.2 + (input.btn.drift ? input.jx * 2 : 0) : 0, dt * 5);
+  if (!look.id) { yaw = lerp(yaw, 0, dt * 1.5); pitch = lerp(pitch, 0, dt * 1.5); }
+  const sh = state.shake; state.shake = Math.max(0, sh - dt * 3);
+  vid.style.transform = `translate(${state.panX + rnd(-1, 1) * sh}%, ${state.panY + rnd(-1, 1) * sh}%) rotate(${state.rot}deg)`;
+  if (hornG) hornG.gain.setTargetAtTime(state.car && input.btn.horn ? .18 : 0, AC.currentTime, .02);
+  if (state.wanted && Math.random() < dt * .04) state.wanted--;
+  // HUD
+  $('#money').textContent = '$' + state.money.toLocaleString(); $('#hpI').style.width = state.hp + '%';
+  document.querySelectorAll('#stars span').forEach((s, k) => s.classList.toggle('on', k < state.wanted));
+  if (toastT > 0) { toastT -= dt; if (toastT <= 0) $('#toast').classList.remove('show'); }
+  radar(dt);
+  input.tap = {};
+}
+requestAnimationFrame(frame);
+
+// ---------- pause & settings ----------
+function setPause(p) {
+  paused = p; $('#pause').hidden = !p; if (p) vid.pause(); else { playVid(); last = performance.now(); }
+  try { localStorage.setItem('lk_money', state.money); } catch (e) { }
+}
+$('#pauseBtn').addEventListener('click', () => setPause(true));
+$('#pResume').addEventListener('click', () => setPause(false));
+$('#pRestart').addEventListener('click', () => { try { vid.currentTime = 0; } catch (e) { } setPause(false); });
+$('#pQuit').addEventListener('click', () => { setPause(false); vid.pause(); paused = false; menu(); });
+document.addEventListener('visibilitychange', () => { if (document.hidden && !$('#play').hidden) setPause(true); });
+$('#volR').value = SET.vol; $('#fxR').value = SET.fx; $('#ctlC').checked = SET.ctl; $('#loadR').value = SET.load;
+$('#volR').addEventListener('input', e => { SET.vol = +e.target.value; vid.volume = SET.vol; saveSet(); });
+$('#fxR').addEventListener('input', e => { SET.fx = +e.target.value; if (fxGain) fxGain.gain.value = SET.fx; saveSet(); tone(660, .05, .2, 'square'); });
+$('#ctlC').addEventListener('change', e => { SET.ctl = e.target.checked; saveSet(); });
+$('#loadR').addEventListener('input', e => { SET.load = +e.target.value; saveSet(); });
+})();
+</script>

@@ -33,3 +33,6 @@ You can also paste a YouTube link on the start screen. The video plays through Y
 
 ## Palmetto Keys (`palmetto/`)
 An original sunset beach-city game with a launcher-style front end: a title screen, then a main menu (Home, Story, Characters, Stats, Settings) with the live city behind it. It has a 5-mission story, free roam with courier jobs, three playable characters with perks, graphics, volume and look settings, a loading screen with tips, and a pause menu with a full map. Progress saves in the browser. Touch controls work on phones (landscape); WASD and the mouse work on desktop.
+
+## Launcher Kit (`launcher/`)
+A launcher shell for your own art. Load a boot logo, an opening video, a game logo, background pictures and a gameplay video from your phone. It plays them in order: boot logo, opening video (tap to skip), title screen, menu, loading screen, then the gameplay video with touch controls on top. Gas and Brake change the video's speed, steering pans the picture. The files stay in your browser and are never uploaded. Nothing in this repo includes third-party art or video.
